@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 역량수준 자기진단</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --navy:#0D47A1; --blue:#1565C0; --ink:#1B2430; --sub:#5B6776; --line:#E1E6EE;
+  --bg:#F4F7FB; --card:#FFFFFF; --soft:#EAF2FD;
+  --l1:#E53935; --l1bg:#FDECEC; --l2:#EF8A00; --l2bg:#FFF3E0;
+  --l3:#2E7D32; --l3bg:#E8F5E9; --l4:#1565C0; --l4bg:#E3F0FD;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:Pretendard,"맑은 고딕","Malgun Gothic",system-ui,sans-serif;background:var(--bg);color:var(--ink);
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 96px}
+header.top{background:var(--navy);color:#fff;padding:28px 16px 22px}
+header.top .inner{max-width:760px;margin:0 auto}
+header.top .org{font-size:13px;opacity:.8;letter-spacing:.02em}
+header.top h1{margin:4px 0 6px;font-size:24px;font-weight:800;letter-spacing:-.02em}
+header.top p{margin:0;font-size:14px;opacity:.88}
+.progress{position:sticky;top:0;z-index:10;background:rgba(244,247,251,.94);backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line);padding:10px 16px}
+.progress .inner{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.bar{flex:1;height:8px;background:#DCE3EC;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--blue);border-radius:99px;transition:width .3s}
+.progress span{font-size:13px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:16px}
+.step-title{display:flex;align-items:baseline;gap:10px;margin:24px 0 4px}
+.step-title b{font-size:13px;color:var(--blue);font-weight:700}
+.step-title h2{margin:0;font-size:20px;letter-spacing:-.01em}
+.hint{color:var(--sub);font-size:13.5px;margin:4px 0 0}
+label.f{display:block;font-size:13.5px;font-weight:600;margin:14px 0 6px}
+label.f em{color:var(--l1);font-style:normal}
+input[type=text],input[type=email],input[type=tel]{width:100%;font:inherit;padding:12px 14px;border:1px solid #CBD4E0;border-radius:10px;background:#fff}
+input[type=text]:focus,input[type=email]:focus,input[type=tel]:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:transparent}
+.scale{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px;font-size:12.5px;text-align:center}
+.scale div{padding:8px 4px;border-radius:8px;background:var(--soft);color:var(--navy);font-weight:600}
+.q{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:14px;transition:border-color .2s}
+.q.missing{border-color:var(--l1);box-shadow:0 0 0 3px var(--l1bg)}
+.q .qn{font-size:12.5px;font-weight:700;color:var(--blue)}
+.q .qt{font-size:16px;font-weight:700;margin:2px 0 12px;line-height:1.5}
+.opts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.opt{position:relative;display:flex;flex-direction:column;gap:4px;border:1.5px solid #D6DDE7;border-radius:10px;
+  padding:10px 10px 12px;cursor:pointer;background:#fff;min-height:88px;transition:all .15s}
+.opt:hover{border-color:#9DB5D6}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt .pt{font-size:12px;font-weight:800;color:var(--sub)}
+.opt .tx{font-size:13px;line-height:1.45;color:var(--ink)}
+.opt:has(input:checked){border-color:var(--blue);background:var(--soft);box-shadow:inset 0 0 0 1px var(--blue)}
+.opt:has(input:checked) .pt{color:var(--blue)}
+.opt:has(input:focus-visible){outline:2px solid var(--blue);outline-offset:2px}
+.nav{display:flex;gap:10px;margin-top:22px}
+button{font:inherit;cursor:pointer;border-radius:10px;border:0;padding:14px 18px;font-weight:700;font-size:15px}
+.btn-p{background:var(--navy);color:#fff;flex:1}
+.btn-p:disabled{background:#93A6C3;cursor:default}
+.btn-s{background:#fff;color:var(--navy);border:1px solid #C5D2E4}
+.opt-l{color:var(--sub);font-weight:400;font-size:12.5px}
+label.cb{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:14px;cursor:pointer}
+label.cb input{width:18px;height:18px;margin-top:3px;accent-color:var(--blue);flex:none}
+.consent .ct{font-weight:700;font-size:15px;margin-bottom:8px}
+.consent table{width:100%;border-collapse:collapse;font-size:13px}
+.consent th{width:76px;text-align:left;color:var(--sub);font-weight:600;padding:6px 8px 6px 0;vertical-align:top}
+.consent td{padding:6px 0;border-bottom:1px solid var(--line)}
+.mailnote{margin-top:12px;font-size:13.5px;padding:10px 12px;border-radius:8px;background:var(--l3bg);color:#1B5E20}
+.mailnote.warn{background:var(--l2bg);color:#8A4B00}
+.err{color:var(--l1);font-size:13.5px;margin-top:10px;min-height:1px}
+.hidden{display:none!important}
+/* 결과 */
+.res-head{text-align:center;padding:26px 20px}
+.res-head .who{color:var(--sub);font-size:14px}
+.score{font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-top:6px;font-variant-numeric:tabular-nums}
+.score small{font-size:20px;color:var(--sub);font-weight:600}
+.badge{display:inline-block;margin-top:10px;padding:6px 16px;border-radius:99px;font-weight:800;font-size:17px}
+.desc{margin:14px auto 0;max-width:560px;font-size:15px}
+.ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:18px}
+.ladder div{padding:8px 2px;border-radius:8px;font-size:12px;text-align:center;background:#EEF1F5;color:#8A95A3;font-weight:600}
+.ladder div b{display:block;font-size:13px}
+.ladder div.on{color:#fff}
+h3.sec{font-size:17px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+h3.sec::before{content:"";width:4px;height:18px;border-radius:2px;background:var(--blue)}
+.radar{display:flex;justify-content:center}
+.radar svg{width:100%;max-width:380px;height:auto}
+table.areas{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+table.areas th{font-size:12.5px;color:var(--sub);font-weight:600;text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+table.areas td{padding:10px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+table.areas td.n{white-space:nowrap;font-weight:700}
+table.areas td.s{white-space:nowrap;font-variant-numeric:tabular-nums}
+.lv{display:inline-block;font-size:12px;font-weight:800;padding:2px 8px;border-radius:6px}
+.tip{font-size:13.5px;color:#36414F}
+ul.g{margin:0;padding-left:20px}
+ul.g li{margin:4px 0}
+ul.chk{list-style:none;margin:0;padding:0}
+ul.chk li{margin:6px 0}
+ul.chk label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+ul.chk input{width:18px;height:18px;margin-top:3px;accent-color:var(--blue);flex:none}
+.train{background:var(--soft);border-radius:10px;padding:14px 16px}
+.train b{color:var(--navy)}
+.note{font-size:12.5px;color:var(--sub);margin-top:18px;text-align:center}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;
+  border-radius:50%;animation:sp .8s linear infinite;vertical-align:-3px;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (max-width:560px){
+  .opts{grid-template-columns:1fr 1fr}
+  .opt{min-height:76px}
+  header.top h1{font-size:21px}
+  .score{font-size:44px}
+}
+@media print{
+  .progress,.nav,.no-print{display:none!important}
+  body{background:#fff}
+  .card{break-inside:avoid;border-color:#ccc}
+  header.top{background:#fff;color:var(--navy);padding:0 0 10px}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="inner">
+  <div class="org">대한상공회의소 경기인력개발원 · 중소기업 AI 훈련확산센터</div>
+  <h1>AI 역량수준 자기진단</h1>
+  <p>25문항 · 약 5~7분 소요 · 제출 즉시 결과와 맞춤 성장 가이드를 확인할 수 있습니다.</p>
+</div></header>
+
+<div class="progress" id="progress"><div class="inner">
+  <div class="bar"><i id="barFill"></i></div><span id="progText">응답 0 / 25</span>
+</div></div>
+
+<main class="wrap">
+  <section id="survey"></section>
+  <section id="result" class="hidden"></section>
+</main>
+
+<script>
+/* 진단용: 본 스크립트가 문법 오류 등으로 실행되지 않으면 화면에 안내를 표시 */
+window.__errs = [];
+window.addEventListener('error', function(e){ window.__errs.push(e.message); });
+setTimeout(function(){
+  var s = document.getElementById('survey');
+  if (s && !s.firstChild) {
+    s.innerHTML = '<div class="card" style="border-color:#E53935;color:#B71C1C">화면 스크립트가 실행되지 않았습니다. ' +
+      (window.__errs.length ? '오류: ' + window.__errs.join(' / ') + ' — ' : '') +
+      'Index 파일 전체(맨 끝 &lt;/html&gt;까지)를 다시 붙여넣은 뒤 새 버전으로 배포해 주세요.</div>';
+  }
+}, 2500);
+</script>
+<script>
+const DATA = {
+ "areas": [
+  "AI 기본 이해",
+  "AI 도구 활용",
+  "데이터 이해",
+  "AI 직무 적용",
+  "AI 확산·혁신"
+ ],
+ "questions": [
+  {
+   "no": 1,
+   "area": 0,
+   "q": "AI(인공지능)가 무엇인지 설명할 수 있다.",
+   "opts": [
+    "AI가 무엇인지 전혀 모른다",
+    "AI라는 단어는 들어봤다",
+    "AI의 기본 개념을 설명할 수 있다",
+    "AI 유형(ML,DL, 생성형AI) 구분한다"
+   ]
+  },
+  {
+   "no": 2,
+   "area": 0,
+   "q": "생성형 AI(ChatGPT 등)와 전통적 AI의 차이를 안다.",
+   "opts": [
+    "차이를 전혀 모른다",
+    "이름은 들어봤으나 차이를 모른다",
+    "대략적인 차이를 설명할 수 있다",
+    "기술적 원리 차이를 명확히 안다"
+   ]
+  },
+  {
+   "no": 3,
+   "area": 0,
+   "q": "AI가 우리 업종에 어떻게 활용되는지 안다.",
+   "opts": [
+    "전혀 모른다",
+    "뉴스에서 본 적은 있다",
+    "우리 업종 적용 사례 2개 이상 안다",
+    "우리 회사에 적용할 구체적 방안을 안다"
+   ]
+  },
+  {
+   "no": 4,
+   "area": 0,
+   "q": "AI 관련 최신 트렌드(멀티모달, AI Agent 등)를 파악하고 있다.",
+   "opts": [
+    "전혀 관심 없다",
+    "가끔 뉴스를 접한다",
+    "주요 트렌드를 설명할 수 있다",
+    "트렌드를 업무 적용 관점에서 분석한다"
+   ]
+  },
+  {
+   "no": 5,
+   "area": 0,
+   "q": "AI 사용 시 개인정보·회사 기밀·저작권 등 보안·윤리 수칙을 알고 지킨다.",
+   "opts": [
+    "주의할 점을 전혀 모른다",
+    "들어봤지만 평소 의식하지 않는다",
+    "민감정보 입력을 피하고 출처·저작권을 확인한다",
+    "사내 AI 사용 수칙을 만들거나 안내한다"
+   ]
+  },
+  {
+   "no": 6,
+   "area": 1,
+   "q": "생성형 AI 도구(ChatGPT, Claude, Copilot 등)를 업무에 정기적으로 활용한다.",
+   "opts": [
+    "사용해 본 적 없다",
+    "1~2번 시험 삼아 써봤다",
+    "업무에 종종 활용한다",
+    "매일 업무에 적극 활용한다"
+   ]
+  },
+  {
+   "no": 7,
+   "area": 1,
+   "q": "AI에게 원하는 결과를 얻기 위해 프롬프트를 구조화할 수 있다.",
+   "opts": [
+    "프롬프트가 뭔지 모른다",
+    "단순 질문만 할 수 있다",
+    "역할·형식·맥락을 지정하여 작성한다",
+    "체계적 프롬프트로 전문가 수준 결과 도출"
+   ]
+  },
+  {
+   "no": 8,
+   "area": 1,
+   "q": "AI 도구에 파일(엑셀,PDF,이미지)을 업로드하여 분석할 수 있다.",
+   "opts": [
+    "방법을 모른다",
+    "업로드는 하지만 분석 요청이 어렵다",
+    "파일 업로드 후 원하는 분석을 요청",
+    "복합 데이터 분석 + 시각화까지 요청한다"
+   ]
+  },
+  {
+   "no": 9,
+   "area": 1,
+   "q": "AI가 생성한 결과물의 정확성을 검증하고 수정할 수 있다.",
+   "opts": [
+    "검증 방법을 모른다",
+    "결과를 그대로 수용한다",
+    "오류를 발견하고 수정 요청한다",
+    "팩트체크+보완요청 +최종 검수까지 한다"
+   ]
+  },
+  {
+   "no": 10,
+   "area": 1,
+   "q": "이미지·음성·영상·발표자료 생성 등 멀티모달 AI 도구를 업무에 활용할 수 있다.",
+   "opts": [
+    "사용해 본 적 없다",
+    "호기심에 1~2번 써 봤다",
+    "회의록 요약·이미지·PPT 초안 등에 활용한다",
+    "여러 도구를 조합해 완성 결과물을 만든다"
+   ]
+  },
+  {
+   "no": 11,
+   "area": 2,
+   "q": "엑셀에서 데이터를 정리하고 기본 함수를 사용한다.",
+   "opts": [
+    "엑셀을 거의 사용하지 않는다",
+    "기본 입력만 가능하다",
+    "함수·필터·피벗을 활용한다",
+    "복잡한 함수·매크로 까지 능숙하다"
+   ]
+  },
+  {
+   "no": 12,
+   "area": 2,
+   "q": "데이터를 차트로 시각화하여 인사이트를 도출할 수 있다.",
+   "opts": [
+    "차트를 만든 적 없다",
+    "기본 차트는 만든다",
+    "적절한 차트 선택해 의미있는 시각화",
+    "대시보드 수준의 종합 시각화를 한다"
+   ]
+  },
+  {
+   "no": 13,
+   "area": 2,
+   "q": "우리 회사 데이터가 어디에 있고 어떻게 수집되는지 안다.",
+   "opts": [
+    "전혀 모른다",
+    "일부 데이터 위치만 안다",
+    "주요 데이터 소스와 수집 방법을 안다",
+    "데이터 흐름 전체를 파악하고 개선안 제시"
+   ]
+  },
+  {
+   "no": 14,
+   "area": 2,
+   "q": "데이터 품질(정확성,완전성)을 판단하고 정제할 수 있다.",
+   "opts": [
+    "데이터 품질 개념을 모른다",
+    "오류 데이터를 인식은 한다",
+    "이상값·누락값을 찾아 정제한다",
+    "품질 기준 수립 + 자동 검증 체계 구축"
+   ]
+  },
+  {
+   "no": 15,
+   "area": 2,
+   "q": "업무 매뉴얼·규정·사례 등 사내 자료를 AI가 참고할 수 있도록 정리해 활용할 수 있다.",
+   "opts": [
+    "방법을 모른다",
+    "필요할 때마다 자료를 붙여넣어 쓴다",
+    "자료를 정리해 프로젝트· NotebookLM 등에 등록",
+    "팀 공용 지식기반·전용 AI를 구축·관리한다"
+   ]
+  },
+  {
+   "no": 16,
+   "area": 3,
+   "q": "내 업무 중 AI로 자동화할 수 있는 과업을 식별할 수 있다.",
+   "opts": [
+    "어떤 업무에 적용할지 모른다",
+    "막연히 “도움될 것 같다” 정도",
+    "구체적 업무 2~3개를 식별할 수 있다",
+    "업무 프로세스 전체를 AI 관점에서 재설계"
+   ]
+  },
+  {
+   "no": 17,
+   "area": 3,
+   "q": "AI로 보고서·문서·이메일 등을 작성하거나 개선할 수 있다.",
+   "opts": [
+    "해본 적 없다",
+    "간단한 문장 정도 작성한다",
+    "업무 문서를 AI로 작성하고 검수한다",
+    "AI로 복합 보고서 +분석+시각화를 한다"
+   ]
+  },
+  {
+   "no": 18,
+   "area": 3,
+   "q": "AI 데이터 분석으로 업무 의사결정에 활용할 수 있다.",
+   "opts": [
+    "데이터 분석을 하지 않는다",
+    "AI 분석 결과를 참고만 한다",
+    "AI 분석 기반으로 의사결정에 반영",
+    "AI 분석 프레임을 직접 설계하고 활용"
+   ]
+  },
+  {
+   "no": 19,
+   "area": 3,
+   "q": "AI 활용 개선 프로젝트를 기획하거나 참여한 적 있다.",
+   "opts": [
+    "경험 없다",
+    "관심은 있으나 경험 없다",
+    "AI 프로젝트에 참여한 적 있다",
+    "AI 프로젝트를 주도적으로 기획·실행"
+   ]
+  },
+  {
+   "no": 20,
+   "area": 3,
+   "q": "AI 활용 전후의 업무 시간·품질 변화를 측정해 효과를 제시할 수 있다.",
+   "opts": [
+    "생각해 본 적 없다",
+    "빨라졌다는 느낌만 있다",
+    "절감 시간 등 지표 1개 이상으로 비교한다",
+    "성과지표를 설계해 정기적으로 보고한다"
+   ]
+  },
+  {
+   "no": 21,
+   "area": 4,
+   "q": "AI 도입의 장점과 한계(환각,편향,보안)를 균형있게 이해한다.",
+   "opts": [
+    "장단점을 모른다",
+    "AI가 좋다는 것만 안다",
+    "주요 한계점 3가지 이상 안다",
+    "한계를 고려한 도입 전략을 수립한다"
+   ]
+  },
+  {
+   "no": 22,
+   "area": 4,
+   "q": "동료에게 AI 도구 활용법을 알려주거나 교육할 수 있다.",
+   "opts": [
+    "본인도 잘 모른다",
+    "기본 사용법만 알려줄 수 있다",
+    "활용 팁과 사례를 포함해 교육 가능",
+    "사내 AI 교육과정을 기획·운영할 수 있다"
+   ]
+  },
+  {
+   "no": 23,
+   "area": 4,
+   "q": "우리 회사 AI 도입 전략이나 로드맵에 의견을 제시할 수 있다.",
+   "opts": [
+    "전혀 생각해 본 적 없다",
+    "필요하다는 인식은 있다",
+    "구체적 도입 방안을 제안할 수 있다",
+    "전사 AI 전환 전략을 수립·실행할 수 있다"
+   ]
+  },
+  {
+   "no": 24,
+   "area": 4,
+   "q": "AI 기술(비전,NLP,예측)을 워크플로우에 통합하는 방법을 안다.",
+   "opts": [
+    "전혀 모른다",
+    "AI 기술 종류는 들어봤다",
+    "적합한 AI 기술을 매칭할 수 있다",
+    "API 연동·자동화 파이프라인을 설계"
+   ]
+  },
+  {
+   "no": 25,
+   "area": 4,
+   "q": "반복 업무를 AI 에이전트·노코드 자동화 도구로 자동화할 수 있다.",
+   "opts": [
+    "자동화 도구를 모른다",
+    "들어봤으나 써 본 적 없다",
+    "노코드 도구로 1건 이상 자동화해 운영한다",
+    "여러 단계 업무를 에이전트· 도구 연동으로 자동화"
+   ]
+  }
+ ],
+ "guide": {
+  "점수 범위": [
+   "25~43점",
+   "44~62점",
+   "63~81점",
+   "82~100점"
+  ],
+  "현재 모습": [
+   "AI를 들어 봤지만 업무에 써 본 경험이 거의 없거나, 시험 삼아 몇 번 질문해 본 수준입니다. AI 결과를 그대로 믿거나 반대로 막연히 불신하는 경향이 있습니다.",
+   "생성형 AI를 가끔 업무에 쓰지만 단발성 질문 위주여서 결과 품질의 편차가 큽니다. 파일·데이터 활용과 업무 적용 범위가 아직 제한적입니다.",
+   "AI를 일상 업무에 쓰고 구조화된 프롬프트로 안정적인 결과를 얻습니다. 다음 과제는 개인 활용을 업무 프로세스 개선과 데이터 기반 의사결정으로 넓히는 것입니다.",
+   "AI를 전문적으로 활용하고 자동화·데이터 분석까지 직접 설계합니다. 역할을 “잘 쓰는 사람”에서 “조직에 퍼뜨리는 사람”으로 넓힐 단계입니다."
+  ],
+  "다음에 해볼 작업": [
+   [
+    "생성형 AI 계정 1개를 만들고 2주간 매일 1회 업무 질문하기",
+    "이메일·안내문 초안 작성, 긴 문서 3줄 요약 요청해 보기",
+    "같은 질문에 역할·목적·형식을 붙여 다시 묻고 결과 비교하기",
+    "AI가 틀린 답(환각)을 낸 사례를 직접 1건 찾아보기"
+   ],
+   [
+    "자주 쓰는 업무 프롬프트 5개를 템플릿(역할-맥락-요청-형식-예시)으로 저장하기",
+    "엑셀·PDF를 올려 요약·표 정리·차트 작성 요청해 보기",
+    "회의 녹음 → 회의록 → 후속 메일 초안을 한 흐름으로 처리하기",
+    "보고서 1건을 AI 초안 + 본인 검수로 작성하고 소요 시간 기록하기"
+   ],
+   [
+    "내 업무 프로세스 1개를 단계별로 그리고 AI·자동화 적용 지점 표시(As-Is/To-Be)",
+    "반복 업무 1건을 노코드 자동화로 구현(예: 메일 수신→요약→시트 기록)",
+    "사내 매뉴얼·규정을 모아 팀 전용 AI(프로젝트·GPTs·NotebookLM) 만들기",
+    "판매·재고·고객 데이터를 AI로 분석해 개선안 1건 보고",
+    "개선 전후 시간·오류율을 비교해 성과 정리(PBL 과제화)"
+   ],
+   [
+    "전사 AI 도입 로드맵 수립(현황 진단→우선 과제→단계별 일정→성과지표)",
+    "사내 AI 사용 가이드라인(보안·저작권·검수 기준) 제정",
+    "부서별 AI 챔피언 육성, 사내 교육과정 설계·운영",
+    "에이전트·API 연동으로 여러 부서에 걸친 업무 자동화 설계",
+    "정부·지자체 AI 지원사업 및 훈련 지원제도 활용 계획 수립"
+   ]
+  ],
+  "추천 도구": [
+   [
+    "범용 AI: ChatGPT·Claude·Gemini 중 1개(무료 버전으로 시작)",
+    "국내 서비스: 뤼튼, 네이버 클로바X",
+    "회의 녹음 요약: 클로바노트",
+    "스마트폰 AI: 사진 속 글자 인식·번역"
+   ],
+   [
+    "범용 AI 유료 기능: 파일 분석, 프로젝트(대화 저장)",
+    "오피스 연계: Microsoft 365 Copilot, 엑셀 Copilot",
+    "문서·회의록 정리: Notion AI, 클로바노트",
+    "발표자료·이미지: Gamma, Canva AI",
+    "출처 있는 검색: Perplexity"
+   ],
+   [
+    "지식기반 AI: Claude 프로젝트, ChatGPT GPTs, NotebookLM",
+    "노코드 자동화: Power Automate, Zapier, Make, n8n",
+    "데이터 분석·대시보드: 엑셀 Copilot, Python in Excel, Power BI",
+    "RPA: Brity RPA, UiPath 등"
+   ],
+   [
+    "업무 에이전트: Copilot Studio, ChatGPT·Claude 에이전트 기능",
+    "시스템 연동: API 연동, n8n 워크플로우",
+    "성과 관리: Power BI, Looker Studio 대시보드",
+    "확산 플랫폼: 사내 LMS, Notion 지식 허브"
+   ]
+  ],
+  "업무 접목 방법": [
+   [
+    "“쓰기·요약·번역” 3가지 업무부터 적용합니다.",
+    "결재가 없는 내부 문서(메모, 회의 정리)에 먼저 써 보고, 고객·외부 문서는 반드시 사람이 검토합니다.",
+    "개인정보·거래처 정보·단가 등 민감정보는 입력하지 않습니다."
+   ],
+   [
+    "주간보고·견적 안내·공지 등 반복 문서부터 템플릿화합니다.",
+    "“초안은 AI, 판단·검수는 사람” 원칙을 지킵니다.",
+    "수치·사실은 반드시 원자료와 대조합니다.",
+    "팀 공용 프롬프트 메모장을 만들어 함께 개선합니다."
+   ],
+   [
+    "개인 생산성에서 팀 프로세스 개선으로 범위를 넓힙니다.",
+    "“빈도 × 소요 시간”이 큰 업무를 우선 과제로 선정합니다.",
+    "소규모 파일럿 → 효과 측정 → 표준화 순으로 진행합니다.",
+    "부서 회의·성과공유회에서 AI 활용 사례를 발표합니다."
+   ],
+   [
+    "개인·팀 단위 성과를 전사 표준으로 확산합니다.",
+    "보안 거버넌스 → 표준 → 확산 순으로 체계를 갖춥니다.",
+    "투자 대비 효과(시간·비용 절감)를 경영진에 정기 보고합니다.",
+    "외부 사례를 벤치마킹하고 우리 회사 사례를 대외 공유합니다."
+   ]
+  ],
+  "다음 레벨 체크포인트": [
+   [
+    "주 3회 이상 AI 사용",
+    "프롬프트에 역할·형식 지정",
+    "결과 오류를 찾아 수정 요청해 봄",
+    "내 업무 중 AI 적용 후보 3개 작성"
+   ],
+   [
+    "업무 프롬프트 템플릿 5개 이상 보유",
+    "파일 업로드 분석 주 1회 이상",
+    "AI로 줄인 업무 시간 1건 이상 측정",
+    "멀티모달 도구 1개 이상 업무 사용"
+   ],
+   [
+    "자동화 1건 이상 실제 운영",
+    "팀 지식기반 AI 구축",
+    "개선 성과를 수치로 제시",
+    "동료 교육·사례 공유 1회 이상"
+   ],
+   [
+    "전사 AI 로드맵 문서화",
+    "사내 AI 가이드라인 운영",
+    "사내 강사·코치 활동",
+    "부서 간 연계 자동화 1건 이상"
+   ]
+  ],
+  "권장 훈련": [
+   [
+    "Lv.1 AI 리터러시 교육 (8~16H)",
+    "AI 개념·트렌드 이해, 생성형 AI 첫 사용, 보안·윤리 기초, 도입 사례 학습"
+   ],
+   [
+    "Lv.2 AI 도구 활용 실습 (16~24H)",
+    "생성형 AI 업무 적용, 프롬프트 엔지니어링, 직무 트랙(Notion·마케팅·HR·경영관리)"
+   ],
+   [
+    "Lv.3 PBL AI+직무훈련 (40~80H)",
+    "현장 과제 PBL, 비전/NLP/예측 실습, RPA·노코드 자동화"
+   ],
+   [
+    "Lv.4 AI 내재화 과정 (80H+)",
+    "모델 고도화, 전사 확산 전략, 사내 강사 양성"
+   ]
+  ]
+ },
+ "areaGuide": [
+  [
+   "기초 강의 1편 수강, 우리 업종 AI 활용 기사 3건을 읽고 요약해 보기",
+   "생성형 AI와 기존 AI의 차이 정리, 업종 사례 2건을 우리 회사에 대입, 보안 수칙 숙지",
+   "멀티모달·AI 에이전트 등 트렌드를 월 1회 정리해 팀 공유, 적용 아이디어 도출",
+   "사내 AI 트렌드 브리핑 정례화, 보안·윤리 가이드 제정 주도"
+  ],
+  [
+   "도구 1개를 정해 매일 1회 사용, 질문에 역할·목적·형식 넣기 연습",
+   "프롬프트 템플릿 5종 저장, 파일 업로드 분석과 결과 검증을 습관화",
+   "회의록·이미지·PPT 등 멀티모달 도구를 조합해 완성 결과물 제작, 도구별 장단점 비교",
+   "업무별 최적 도구 세트와 프롬프트 라이브러리를 만들어 팀에 배포"
+  ],
+  [
+   "엑셀 기본(정렬·필터·SUM) 실습, 내 업무 데이터가 어디 있는지 파악",
+   "함수·피벗·차트 실습, AI에게 엑셀 함수·수식 작성을 요청해 보기",
+   "데이터 정제 규칙 수립, 사내 자료로 AI 지식기반 구축, 대시보드 작성",
+   "데이터 수집 흐름·품질 기준 수립, 자동 검증·대시보드 체계 운영"
+  ],
+  [
+   "내 업무 목록을 적고 “쓰기·요약·번역” 업무 3개를 표시",
+   "반복 문서 1종을 AI로 작성하고 소요 시간 전후를 기록",
+   "업무 프로세스 1개를 As-Is/To-Be로 재설계, PBL 과제로 성과 측정",
+   "부서 단위 AI 개선 프로젝트 기획, 성과지표(KPI) 관리"
+  ],
+  [
+   "환각·편향·보안 등 AI 한계 사례 학습, 사내 정보보안 규정 확인",
+   "내가 찾은 AI 활용 팁을 동료 1명에게 공유",
+   "노코드 자동화 1건 구현, 팀 내 사례 발표·미니 교육",
+   "전사 로드맵·가이드라인 수립, 사내 강사·AI 챔피언 육성"
+  ]
+ ]
+};
+/* ===== 설정: Apps Script 웹앱 배포 ID (웹앱 URL의 /s/ 와 /exec 사이 문자열) ===== */
+const DEPLOY_ID = 'AKfycbzVyjZfUUCpZ4IlQ1wZlxYX-crwnC8BIuBIM5YYsPUFkMC7uadBzZupoNlSkx-Ru02d';
+const API_URL = ['https:', '', 'script.google.com', 'macros', 's', DEPLOY_ID, 'exec'].join('/');
+const CONSENT_RETENTION = '사업 종료 후 1년 (이후 지체 없이 파기)';
+const LV = [
+  {name:'Lv.1 인식', c:'var(--l1)', bg:'var(--l1bg)', range:'25~43'},
+  {name:'Lv.2 이해', c:'var(--l2)', bg:'var(--l2bg)', range:'44~62'},
+  {name:'Lv.3 활용', c:'var(--l3)', bg:'var(--l3bg)', range:'63~81'},
+  {name:'Lv.4 혁신', c:'var(--l4)', bg:'var(--l4bg)', range:'82~100'}
+];
+const answers = new Array(25).fill(0);
+let step = 0; /* 0 = 기본정보, 1~5 = 영역 */
+const info = {company:'', dept:'', name:'', email:'', phone:'', consent:false, emailMe:true};
+
+const $ = (s, el=document) => el.querySelector(s);
+function h(tag, attrs={}, ...kids){
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs)){
+    if (k === 'class') e.className = v;
+    else if (k === 'style') e.style.cssText = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()){ if (k == null) continue; e.append(k instanceof Node ? k : document.createTextNode(k)); }
+  return e;
+}
+const lines = a => (Array.isArray(a) ? a : [a]).filter(Boolean);
+
+function updateProgress(){
+  const n = answers.filter(Boolean).length;
+  $('#barFill').style.width = (n/25*100)+'%';
+  $('#progText').textContent = `응답 ${n} / 25`;
+}
+
+function renderInfo(root){
+  root.append(
+    h('div',{class:'step-title'}, h('b',{},'STEP 1 / 6'), h('h2',{},'기본 정보')),
+    h('p',{class:'hint'},'최근 3개월간의 실제 업무 경험을 기준으로, 본인에게 가장 가까운 답을 골라 주세요. 정답은 없습니다.'),
+    h('div',{class:'card'},
+      h('label',{class:'f',for:'company'},'기업명 ',h('em',{},'*')),
+      h('input',{type:'text',id:'company',maxlength:'60',autocomplete:'organization',placeholder:'예) ○○산업'}),
+      h('label',{class:'f',for:'dept'},'부서 / 직책'),
+      h('input',{type:'text',id:'dept',maxlength:'40',placeholder:'예) 생산관리팀 / 대리'}),
+      h('label',{class:'f',for:'name'},'성명 ',h('em',{},'*')),
+      h('input',{type:'text',id:'name',maxlength:'30',autocomplete:'name'}),
+      h('label',{class:'f',for:'email'},'이메일 ',h('em',{},'*')),
+      h('input',{type:'email',id:'email',maxlength:'100',autocomplete:'email',inputmode:'email',placeholder:'예) hong@company.co.kr'}),
+      h('label',{class:'f',for:'phone'},'휴대폰 번호 ',h('span',{class:'opt-l'},'(선택)')),
+      h('input',{type:'tel',id:'phone',maxlength:'13',autocomplete:'tel',inputmode:'numeric',placeholder:'예) 010-1234-5678'}),
+      h('label',{class:'cb'}, h('input',{type:'checkbox',id:'emailMe'}), h('span',{},'진단 결과와 성장 가이드를 이메일로 받겠습니다.')),
+      h('div',{class:'scale'},
+        h('div',{},'1점 전혀 아님'),h('div',{},'2점 조금'),h('div',{},'3점 대체로'),h('div',{},'4점 매우'))
+    ),
+    h('div',{class:'card consent'},
+      h('div',{class:'ct'},'개인정보 수집·이용 동의 (필수)'),
+      h('table',{},h('tbody',{},
+        h('tr',{},h('th',{},'수집 항목'),h('td',{},'기업명, 부서/직책, 성명, 이메일, 휴대폰 번호(선택), 진단 응답')),
+        h('tr',{},h('th',{},'이용 목적'),h('td',{},'AI 역량 진단 결과 제공, 맞춤 교육과정 안내 및 훈련 운영')),
+        h('tr',{},h('th',{},'보유 기간'),h('td',{},CONSENT_RETENTION)))),
+      h('p',{class:'hint'},'동의를 거부할 수 있으나, 거부 시 진단에 참여할 수 없습니다.'),
+      h('label',{class:'cb'}, h('input',{type:'checkbox',id:'consent'}), h('span',{},'위 내용을 확인하였으며 개인정보 수집·이용에 동의합니다.'))
+    )
+  );
+  for (const k of ['company','dept','name','email','phone']){
+    const el = $('#'+k, root); el.value = info[k];
+    el.addEventListener('input', () => info[k] = el.value);
+  }
+  for (const k of ['consent','emailMe']){
+    const el = $('#'+k, root); el.checked = info[k];
+    el.addEventListener('change', () => info[k] = el.checked);
+  }
+}
+const isEmail = s => /^[^@ ]+@[^@ ]+[.][^@ ]+$/.test(s.trim());
+const phoneDigits = s => s.replace(/[^0-9]/g,'');
+
+function renderArea(root, a){
+  root.append(
+    h('div',{class:'step-title'}, h('b',{},`STEP ${a+2} / 6`), h('h2',{},DATA.areas[a])),
+    h('p',{class:'hint'},'문항마다 가장 가까운 설명 하나를 선택하세요.')
+  );
+  DATA.questions.filter(q => q.area === a).forEach(q => {
+    const box = h('div',{class:'q',id:'q'+q.no},
+      h('div',{class:'qn'},`Q${q.no}`),
+      h('div',{class:'qt'},q.q)
+    );
+    const opts = h('div',{class:'opts',role:'radiogroup','aria-label':`Q${q.no}`});
+    q.opts.forEach((t,i) => {
+      const inp = h('input',{type:'radio',name:'q'+q.no,value:String(i+1)});
+      if (answers[q.no-1] === i+1) inp.checked = true;
+      inp.addEventListener('change', () => { answers[q.no-1] = i+1; box.classList.remove('missing'); updateProgress(); });
+      opts.append(h('label',{class:'opt'}, inp, h('span',{class:'pt'},`${i+1}점`), h('span',{class:'tx'},t)));
+    });
+    box.append(opts); root.append(box);
+  });
+}
+
+function renderStep(){
+  const root = $('#survey'); root.textContent = '';
+  if (step === 0) renderInfo(root); else renderArea(root, step-1);
+  const err = h('div',{class:'err',id:'err',role:'alert'});
+  const nav = h('div',{class:'nav'});
+  if (step > 0) nav.append(h('button',{class:'btn-s',type:'button',onclick:()=>{step--;renderStep();scrollTo(0,0);}},'이전'));
+  const last = step === 5;
+  nav.append(h('button',{class:'btn-p',type:'button',id:'nextBtn',onclick:last?submit:next}, last?'제출하고 결과 보기':'다음'));
+  root.append(err, nav);
+}
+
+function next(){
+  const err = $('#err'); err.textContent = '';
+  if (step === 0){
+    if (!info.company.trim() || !info.name.trim()){ err.textContent = '기업명과 성명을 입력해 주세요.'; return; }
+    if (!isEmail(info.email)){ err.textContent = '이메일 주소를 정확히 입력해 주세요.'; $('#email').focus(); return; }
+    const pd = phoneDigits(info.phone);
+    if (pd && (pd.length < 9 || pd.length > 11)){ err.textContent = '휴대폰 번호를 확인해 주세요. (선택 항목이므로 비워 두셔도 됩니다)'; $('#phone').focus(); return; }
+    if (!info.consent){ err.textContent = '개인정보 수집·이용에 동의해 주세요.'; return; }
+  } else if (!checkArea(step-1)) return;
+  step++; renderStep(); scrollTo(0,0);
+}
+
+function checkArea(a){
+  const miss = DATA.questions.filter(q => q.area === a && !answers[q.no-1]);
+  miss.forEach(q => $('#q'+q.no).classList.add('missing'));
+  if (miss.length){
+    $('#err').textContent = `응답하지 않은 문항이 있습니다: ${miss.map(q=>'Q'+q.no).join(', ')}`;
+    $('#q'+miss[0].no).scrollIntoView({behavior:'smooth',block:'center'});
+    return false;
+  }
+  return true;
+}
+
+/* 서버 판정과 동일한 계산 (미리보기·표시용) */
+function compute(scores){
+  const areaScores = DATA.areas.map((_,a) => scores.slice(a*5,a*5+5).reduce((s,v)=>s+v,0));
+  const total = areaScores.reduce((s,v)=>s+v,0);
+  const level = total>=82?4:total>=63?3:total>=44?2:1;
+  const areaLevels = areaScores.map(s => s>=17?4:s>=13?3:s>=9?2:1);
+  return {total, level, areaScores, areaLevels};
+}
+
+function submit(){
+  if (!checkArea(4)) return;
+  if (answers.some(v=>!v)){ $('#err').textContent = '응답하지 않은 문항이 있습니다. 이전 단계를 확인해 주세요.'; return; }
+  const btn = $('#nextBtn'); btn.disabled = true;
+  btn.textContent = ''; btn.append(h('span',{class:'spinner'}),'저장 중…');
+  const payload = {company:info.company, dept:info.dept, name:info.name, email:info.email.trim(), phone:info.phone, consent:info.consent, emailMe:info.emailMe, scores:answers.slice()};
+  const fail = e => {
+    btn.disabled = false; btn.textContent = '제출하고 결과 보기';
+    $('#err').textContent = '저장 중 문제가 발생했습니다. 잠시 후 다시 눌러 주세요. (' + ((e && e.message) || e) + ')';
+  };
+  if (window.google && google.script && google.script.run){
+    google.script.run.withSuccessHandler(showResult).withFailureHandler(fail).submitResponse(payload);
+  } else if (DEPLOY_ID){
+    /* 외부 호스팅: Apps Script 웹앱(doPost)으로 전송. 헤더를 지정하지 않아야 브라우저 사전요청 없이 전송됩니다. */
+    fetch(API_URL, {method:'POST', body: JSON.stringify(payload), redirect:'follow'})
+      .then(res => res.json())
+      .then(j => j && j.ok ? showResult(j.result) : fail(new Error((j && j.error) || '서버 응답 오류')))
+      .catch(fail);
+  } else {
+    /* Apps Script 밖에서 열었을 때(미리보기): 저장 없이 결과만 표시 */
+    setTimeout(() => showResult(compute(payload.scores)), 400);
+  }
+}
+
+function radarSVG(scores){
+  const N=5, cx=190, cy=170, R=120, ns=['http:','','www.w3.org','2000','svg'].join('/');
+  const svg = document.createElementNS(ns,'svg');
+  svg.setAttribute('viewBox','0 0 380 340'); svg.setAttribute('role','img');
+  svg.setAttribute('aria-label','영역별 점수 레이더 차트: '+DATA.areas.map((a,i)=>`${a} ${scores[i]}점`).join(', '));
+  const pt = (i,r) => { const ang = -Math.PI/2 + i*2*Math.PI/N; return [cx + r*Math.cos(ang), cy + r*Math.sin(ang)]; };
+  const mk = (tag, at) => { const e=document.createElementNS(ns,tag); for (const k in at) e.setAttribute(k,at[k]); svg.append(e); return e; };
+  [5,10,15,20].forEach(v => mk('polygon',{points:[...Array(N)].map((_,i)=>pt(i,R*v/20).join(',')).join(' '),
+    fill: v===20?'#F7F9FC':'none', stroke:'#D5DCE6','stroke-width':1}));
+  for (let i=0;i<N;i++){ const [x,y]=pt(i,R); mk('line',{x1:cx,y1:cy,x2:x,y2:y,stroke:'#D5DCE6'}); }
+  mk('polygon',{points:scores.map((s,i)=>pt(i,R*s/20).join(',')).join(' '),fill:'rgba(21,101,192,.22)',stroke:'#1565C0','stroke-width':2.5,'stroke-linejoin':'round'});
+  scores.forEach((s,i)=>{
+    const [x,y]=pt(i,R*s/20); mk('circle',{cx:x,cy:y,r:4,fill:'#1565C0'});
+    const [lx,ly]=pt(i,R+30);
+    const t1 = mk('text',{x:lx,y:ly-2,'text-anchor':'middle','font-size':13,'font-weight':700,fill:'#1B2430'}); t1.textContent = DATA.areas[i];
+    const t2 = mk('text',{x:lx,y:ly+15,'text-anchor':'middle','font-size':12.5,fill:'#1565C0','font-weight':700}); t2.textContent = s+'점';
+  });
+  return svg;
+}
+
+function lvTag(l){ return h('span',{class:'lv',style:`color:${LV[l-1].c};background:${LV[l-1].bg}`}, `Lv.${l}`); }
+
+function showResult(r){
+  window.onbeforeunload = null;
+  $('#survey').classList.add('hidden'); $('#progress').classList.add('hidden');
+  const root = $('#result'); root.textContent=''; root.classList.remove('hidden');
+  const li = r.level - 1, G = DATA.guide;
+
+  const ladder = h('div',{class:'ladder'}, LV.map((v,i) => {
+    const d = h('div',{class: i===li?'on':''}, h('b',{},v.name), `${v.range}점`);
+    if (i===li) d.style.background = v.c; return d;
+  }));
+  root.append(h('div',{class:'card res-head'},
+    h('div',{class:'who'}, `${info.company}${info.dept?' · '+info.dept:''} · ${info.name} 님의 진단 결과`),
+    h('div',{class:'score'}, String(r.total), h('small',{},' / 100점')),
+    h('div',{class:'badge',style:`color:${LV[li].c};background:${LV[li].bg}`}, '★ '+LV[li].name),
+    h('p',{class:'desc'}, G['현재 모습'][li]),
+    ladder,
+    r.mail === 'sent' ? h('div',{class:'mailnote'}, `결과와 성장 가이드를 ${info.email.trim()} 으로 보내드렸습니다.`) :
+    r.mail === 'dup' ? h('div',{class:'mailnote'}, '10분 이내에 같은 주소로 결과 메일을 이미 보내드렸습니다.') :
+    r.mail === 'failed' ? h('div',{class:'mailnote warn'}, '결과 메일 발송이 지연되고 있습니다. 이 화면을 인쇄하거나 PDF로 저장해 두세요.') : null
+  ));
+
+  const tbody = h('tbody');
+  DATA.areas.forEach((a,i) => tbody.append(h('tr',{},
+    h('td',{class:'n'},a),
+    h('td',{class:'s'},`${r.areaScores[i]} / 20`),
+    h('td',{},lvTag(r.areaLevels[i])),
+    h('td',{class:'tip'}, DATA.areaGuide[i][r.areaLevels[i]-1])
+  )));
+  const strongest = r.areaScores.indexOf(Math.max(...r.areaScores));
+  const weakest = r.areaScores.indexOf(Math.min(...r.areaScores));
+  root.append(h('div',{class:'card'},
+    h('h3',{class:'sec'},'영역별 역량 프로필'),
+    h('div',{class:'radar'}, radarSVG(r.areaScores)),
+    h('p',{class:'hint',style:'text-align:center'}, strongest===weakest ? '다섯 영역이 고르게 분포되어 있습니다.' :
+      `가장 강한 영역은 ‘${DATA.areas[strongest]}’, 우선 보완할 영역은 ‘${DATA.areas[weakest]}’입니다.`),
+    h('table',{class:'areas'},
+      h('thead',{},h('tr',{},h('th',{},'영역'),h('th',{},'점수'),h('th',{},'수준'),h('th',{},'추천 보완 활동'))),
+      tbody)
+  ));
+
+  const list = key => h('ul',{class:'g'}, lines(G[key][li]).map(t=>h('li',{},t)));
+  root.append(
+    h('div',{class:'card'}, h('h3',{class:'sec'},'다음에 해볼 작업'), list('다음에 해볼 작업')),
+    h('div',{class:'card'}, h('h3',{class:'sec'},'추천 도구'), list('추천 도구'),
+      h('p',{class:'hint'},'※ 도구명은 예시입니다. 사용 전 회사의 정보보안 정책을 확인하세요.')),
+    h('div',{class:'card'}, h('h3',{class:'sec'},'업무 접목 방법'), list('업무 접목 방법')),
+    h('div',{class:'card'}, h('h3',{class:'sec'}, r.level<4?'다음 레벨로 가기 위한 체크포인트':'지속 성장 체크포인트'),
+      h('ul',{class:'chk'}, lines(G['다음 레벨 체크포인트'][li]).map((t,i)=>h('li',{},
+        h('label',{}, h('input',{type:'checkbox'}), h('span',{},t)))))),
+    h('div',{class:'card'}, h('h3',{class:'sec'},'권장 훈련'),
+      (()=>{ const [t,...rest] = lines(G['권장 훈련'][li]); return h('div',{class:'train'}, h('b',{},t), h('div',{},rest.join(' '))); })()),
+    h('div',{class:'nav no-print'}, h('button',{class:'btn-p',type:'button',onclick:()=>window.print()},'결과 인쇄 / PDF로 저장')),
+    h('p',{class:'note'},'응답이 정상적으로 제출되었습니다. 본 자기진단 결과는 참고용이며, 정확한 수준 판정은 실무역량테스트와 함께 활용하시기 바랍니다.')
+  );
+  scrollTo(0,0);
+}
+
+function showFatal(msg){
+  const box = document.getElementById('survey');
+  if (!box) return;
+  box.innerHTML = '';
+  const d = document.createElement('div');
+  d.className = 'card';
+  d.style.cssText = 'border-color:#E53935;color:#B71C1C';
+  d.textContent = '화면을 불러오는 중 오류가 발생했습니다: ' + msg +
+    '  — Index 파일 내용이 끝까지(마지막 </html> 줄까지) 붙여넣어졌는지 확인해 주세요.';
+  box.append(d);
+}
+window.addEventListener('error', e => showFatal(e.message || '알 수 없는 오류'));
+function init(){
+  try {
+    if (typeof DATA === 'undefined' || !DATA.questions || DATA.questions.length !== 25) throw new Error('문항 데이터 누락');
+    window.onbeforeunload = () => answers.some(Boolean) ? true : undefined;
+    renderStep(); updateProgress();
+  } catch (e) { showFatal(e.message); }
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+</script>
+</body>
+</html>
