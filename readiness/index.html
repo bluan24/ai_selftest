@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>중소기업 AI 준비도 진단</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --navy:#0D47A1; --blue:#1565C0; --ink:#1B2430; --sub:#5B6776; --line:#E1E6EE;
+  --bg:#F4F7FB; --card:#FFFFFF; --soft:#EAF2FD;
+  --l1:#E53935; --l1bg:#FDECEC; --l2:#EF6C00; --l2bg:#FFF3E0; --l3:#B8860B; --l3bg:#FFF8D6;
+  --l4:#2E7D32; --l4bg:#E8F5E9; --l5:#1565C0; --l5bg:#E3F0FD;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:Pretendard,"맑은 고딕","Malgun Gothic",system-ui,sans-serif;background:var(--bg);color:var(--ink);
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all}
+.wrap{max-width:820px;margin:0 auto;padding:0 16px 96px}
+header.top{background:var(--navy);color:#fff;padding:28px 16px 22px}
+header.top .inner{max-width:820px;margin:0 auto}
+header.top .org{font-size:13px;opacity:.8}
+header.top h1{margin:4px 0 6px;font-size:24px;font-weight:800;letter-spacing:-.02em}
+header.top p{margin:0;font-size:14px;opacity:.88}
+.progress{position:sticky;top:0;z-index:10;background:rgba(244,247,251,.95);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 16px}
+.progress .inner{max-width:820px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.bar{flex:1;height:8px;background:#DCE3EC;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--blue);border-radius:99px;transition:width .3s}
+.progress span{font-size:13px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:16px}
+.step-title{display:flex;align-items:baseline;gap:10px;margin:24px 0 4px;flex-wrap:wrap}
+.step-title b{font-size:13px;color:var(--blue);font-weight:700}
+.step-title h2{margin:0;font-size:20px;letter-spacing:-.01em}
+.hint{color:var(--sub);font-size:13.5px;margin:4px 0 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+label.f{display:block;font-size:13.5px;font-weight:600;margin:14px 0 6px}
+label.f em{color:var(--l1);font-style:normal}
+.opt-l{color:var(--sub);font-weight:400;font-size:12.5px}
+input[type=text],input[type=email],input[type=tel],select{width:100%;font:inherit;padding:12px 14px;border:1px solid #CBD4E0;border-radius:10px;background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:transparent}
+label.cb{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:14px;cursor:pointer}
+label.cb input{width:18px;height:18px;margin-top:3px;accent-color:var(--blue);flex:none}
+.consent .ct{font-weight:700;font-size:15px;margin-bottom:8px}
+.consent table{width:100%;border-collapse:collapse;font-size:13px}
+.consent th{width:76px;text-align:left;color:var(--sub);font-weight:600;padding:6px 8px 6px 0;vertical-align:top}
+.consent td{padding:6px 0;border-bottom:1px solid var(--line)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:14px;transition:border-color .2s}
+.q.missing{border-color:var(--l1);box-shadow:0 0 0 3px var(--l1bg)}
+.q .qn{font-size:12.5px;font-weight:700;color:var(--blue)}
+.q .qt{font-size:16px;font-weight:700;margin:2px 0 12px;line-height:1.5}
+.opts{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.opt{position:relative;display:flex;flex-direction:column;gap:4px;border:1.5px solid #D6DDE7;border-radius:10px;padding:10px 10px 12px;cursor:pointer;background:#fff;min-height:86px;transition:all .15s}
+.opt:hover{border-color:#9DB5D6}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt .pt{font-size:12px;font-weight:800;color:var(--sub)}
+.opt .tx{font-size:12.5px;line-height:1.45}
+.opt:has(input:checked){border-color:var(--blue);background:var(--soft);box-shadow:inset 0 0 0 1px var(--blue)}
+.opt:has(input:checked) .pt{color:var(--blue)}
+.opt:has(input:focus-visible){outline:2px solid var(--blue);outline-offset:2px}
+.yn{display:flex;gap:8px;flex-wrap:wrap}
+.yn .opt{min-height:0;flex-direction:row;padding:9px 14px}
+.nav{display:flex;gap:10px;margin-top:22px}
+button{font:inherit;cursor:pointer;border-radius:10px;border:0;padding:14px 18px;font-weight:700;font-size:15px}
+.btn-p{background:var(--navy);color:#fff;flex:1}
+.btn-p:disabled{background:#93A6C3;cursor:default}
+.btn-s{background:#fff;color:var(--navy);border:1px solid #C5D2E4}
+.err{color:var(--l1);font-size:13.5px;margin-top:10px}
+.hidden{display:none!important}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite;vertical-align:-3px;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* 결과 */
+.res-head{text-align:center;padding:26px 20px}
+.res-head .who{color:var(--sub);font-size:14px}
+.score{font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-top:6px;font-variant-numeric:tabular-nums}
+.score small{font-size:20px;color:var(--sub);font-weight:600}
+.badge{display:inline-block;margin-top:10px;padding:6px 16px;border-radius:99px;font-weight:800;font-size:17px}
+.desc{margin:14px auto 0;max-width:600px}
+.ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:18px}
+.ladder div{padding:8px 2px;border-radius:8px;font-size:11.5px;text-align:center;background:#EEF1F5;color:#8A95A3;font-weight:600;line-height:1.35}
+.ladder div b{display:block;font-size:12.5px}
+.ladder div.on{color:#fff}
+h3.sec{font-size:17px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+h3.sec::before{content:"";width:4px;height:18px;border-radius:2px;background:var(--blue);flex:none}
+.radar{display:flex;justify-content:center}
+.radar svg{width:100%;max-width:520px;height:auto}
+table.areas{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+table.areas th{font-size:12.5px;color:var(--sub);font-weight:600;text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+table.areas td{padding:10px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+table.areas td.n{white-space:nowrap;font-weight:700}
+table.areas td.s{white-space:nowrap;font-variant-numeric:tabular-nums}
+.lv{display:inline-block;font-size:12px;font-weight:800;padding:2px 8px;border-radius:6px;white-space:nowrap}
+.tip{font-size:13.5px;color:#36414F}
+ul.g{margin:0;padding-left:20px} ul.g li{margin:4px 0}
+.goal{font-size:16px;font-weight:800;color:var(--navy);margin-bottom:12px}
+.timeline{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.phase{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#FAFCFF}
+.phase .ph{font-size:12.5px;font-weight:800;color:#fff;background:var(--blue);display:inline-block;padding:2px 10px;border-radius:99px;margin-bottom:6px}
+.phase ul{margin:0;padding-left:18px;font-size:13.5px} .phase li{margin:3px 0}
+dl.kv{display:grid;grid-template-columns:120px 1fr;gap:8px 12px;margin:14px 0 0;font-size:14px}
+dl.kv dt{color:var(--sub);font-weight:700} dl.kv dd{margin:0}
+.task{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:10px}
+.task .top{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px}
+.chip{padding:2px 8px;border-radius:99px;background:#EEF1F5;color:#455A64;font-weight:700}
+.chip.job{background:var(--soft);color:var(--navy)}
+.task .nm{font-size:16px;font-weight:800;margin:6px 0 2px}
+.task .ds{font-size:13.5px;color:#36414F}
+.task .meta{font-size:13px;margin-top:6px;color:#36414F}
+.task .meta b{color:var(--sub);font-weight:700}
+.task .warn{font-size:12.5px;color:#B71C1C;margin-top:6px}
+.task.pre{background:#FFFBF2;border-color:#F3DDB3}
+.note{font-size:12.5px;color:var(--sub);margin-top:18px;text-align:center}
+.mailnote{margin-top:12px;font-size:13.5px;padding:10px 12px;border-radius:8px;background:var(--l4bg);color:#1B5E20}
+.mailnote.warn{background:var(--l2bg);color:#8A4B00}
+.train{background:var(--soft);border-radius:10px;padding:12px 14px;margin-top:10px;font-size:14px}
+@media (max-width:640px){
+  .opts{grid-template-columns:1fr}
+  .opt{min-height:0;flex-direction:row;align-items:baseline;gap:10px}
+  .grid2{grid-template-columns:1fr}
+  .timeline{grid-template-columns:1fr}
+  dl.kv{grid-template-columns:1fr;gap:2px} dl.kv dd{margin-bottom:8px}
+  .ladder div{font-size:10.5px} .ladder div b{font-size:11px}
+  header.top h1{font-size:21px} .score{font-size:44px}
+  table.areas thead{display:none}
+  table.areas tr{display:grid;grid-template-columns:1fr auto auto;gap:0 10px;border-bottom:1px solid var(--line);padding:8px 0}
+  table.areas td{border:0;padding:2px 0}
+  table.areas td.tip{grid-column:1/-1;font-size:13px}
+}
+@media print{
+  .progress,.nav,.no-print{display:none!important}
+  body{background:#fff} .card{break-inside:avoid;border-color:#ccc}
+  header.top{background:#fff;color:var(--navy);padding:0 0 10px}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="inner">
+  <div class="org">대한상공회의소 경기인력개발원 · 중소기업 AI 훈련확산센터</div>
+  <h1>중소기업 AI 준비도 진단</h1>
+  <p>30문항 · 약 7~10분 소요 · 제출 즉시 등급, 12개월 로드맵, 추천 AI 활용 과제를 확인할 수 있습니다.</p>
+</div></header>
+<div class="progress" id="progress"><div class="inner">
+  <div class="bar"><i id="barFill"></i></div><span id="progText">응답 0 / 30</span>
+</div></div>
+<main class="wrap">
+  <section id="survey"></section>
+  <section id="result" class="hidden"></section>
+</main>
+<script>
+const DATA = {"areas": ["전략·리더십", "디지털·데이터 기반", "AI 도구·기술 활용", "인재·역량", "보안·법규·윤리", "조직문화·실행"], "questions": [{"no": "1-1", "area": 0, "q": "경영진이 AI 도입 목적과 기대 효과를 명확히 제시하고 있다.", "opts": ["관심이 없다", "필요성만 말로 언급한다", "목적은 있으나 직원과 공유되지 않았다", "목적·기대 효과를 전 직원과 공유했다", "경영 목표에 반영해 정기적으로 점검한다"]}, {"no": "1-2", "area": 0, "q": "AI를 우선 적용할 업무(활용 과제)를 선정했다.", "opts": ["검토한 적 없다", "막연한 아이디어 수준이다", "후보 업무 목록을 만들었다", "효과·난이도로 우선순위를 정했다", "과제별 담당·일정을 정해 추진 중이다"]}, {"no": "1-3", "area": 0, "q": "단계별 추진 계획(로드맵)과 예산(AI 도구 구독비 포함)이 마련되어 있다.", "opts": ["계획·예산이 없다", "필요할 때마다 즉흥적으로 지출한다", "연간 예산에 일부 반영했다", "단계별 계획과 예산이 확정되어 있다", "성과에 따라 매년 계획·예산을 갱신한다"]}, {"no": "1-4", "area": 0, "q": "AI 추진 담당자(겸직 가능) 또는 TF가 지정되어 있다.", "opts": ["담당자가 없다", "관심 있는 직원이 개인적으로 한다", "담당자는 지정했으나 권한·시간이 없다", "담당자·TF에 권한과 시간을 주었다", "부서별 담당자 협의체가 운영된다"]}, {"no": "1-5", "area": 0, "q": "AI 도입 효과를 시간·비용 등 지표로 측정하고 있다.", "opts": ["측정하지 않는다", "체감 수준으로만 안다", "일부 과제를 사후에 측정했다", "과제별 지표를 정기적으로 측정한다", "투자 대비 효과를 경영진에 보고한다"]}, {"no": "2-1", "area": 1, "q": "ERP·MES·그룹웨어 등 업무 시스템으로 핵심 업무를 처리한다.", "opts": ["대부분 종이·수기로 처리한다", "엑셀 위주로 개인이 관리한다", "일부 업무에 시스템을 쓴다", "핵심 업무가 시스템화되어 있다", "시스템 간 연동·통합 운영 중이다"]}, {"no": "2-2", "area": 1, "q": "판매·생산·고객 등 핵심 데이터가 전산으로 쌓이고, 필요할 때 쉽게 꺼내 쓸 수 있다.", "opts": ["데이터가 거의 없다", "흩어진 파일로만 있다", "쌓이지만 추출이 어렵다", "담당자가 쉽게 추출한다", "대시보드로 상시 조회한다"]}, {"no": "2-3", "area": 1, "q": "제품·거래처·코드 등 기준정보가 일관되게 관리되고 데이터 오류를 점검한다.", "opts": ["기준이 없다", "부서마다 다르게 관리한다", "기준은 있으나 오류가 많다", "기준을 통일하고 정기 점검한다", "입력 단계에서 자동으로 검증한다"]}, {"no": "2-4", "area": 1, "q": "매뉴얼·규정·견적·도면 등 사내 문서가 디지털로 정리되어 AI가 참고할 수 있다.", "opts": ["종이·개인 PC에 흩어져 있다", "공유 폴더에 있으나 정리가 안 됐다", "주요 문서를 디지털화했다", "체계적으로 분류하고 최신본을 관리한다", "AI 지식기반(사내 검색·챗봇)과 연결했다"]}, {"no": "2-5", "area": 1, "q": "설비·현장·업무 데이터가 수기 입력 없이 자동으로 수집된다.", "opts": ["전부 수기로 기록한다", "일부를 엑셀에 옮겨 적는다", "일부 데이터가 자동 수집된다", "주요 데이터가 자동 수집된다", "실시간 수집·모니터링한다"]}, {"no": "3-1", "area": 2, "q": "회사 차원에서 업무용 생성형 AI(ChatGPT·Copilot 등)를 도입해 사용한다.", "opts": ["사용하지 않는다", "직원 개인 무료 계정만 쓴다", "일부 부서에 회사 계정을 준다", "전사에 회사 계정을 제공한다", "업무별 활용 방식이 표준화되어 있다"]}, {"no": "3-2", "area": 2, "q": "업무 목적에 맞는 AI 도구·솔루션을 비용·보안 기준으로 비교해 선택한다.", "opts": ["정보가 없다", "추천받은 도구를 그대로 쓴다", "몇 가지를 비교해 도입했다", "비용·보안·효과 기준으로 선정한다", "도입 후 재평가해 교체·확대한다"]}, {"no": "3-3", "area": 2, "q": "AI 도구가 기존 업무 시스템과 연동되어 데이터를 두 번 입력하지 않는다.", "opts": ["연동을 고려한 적 없다", "복사·붙여넣기로 옮긴다", "일부 파일로 주고받는다", "주요 시스템과 연동되어 있다", "API 등으로 자동 연동된다"]}, {"no": "3-4", "area": 2, "q": "반복 업무를 AI 에이전트·노코드 자동화(RPA 포함)로 처리한다.", "opts": ["무엇인지 모른다", "검토만 해 보았다", "1~2건 시범 운영 중이다", "여러 업무에 적용해 운영한다", "부서 간 업무까지 연계 자동화했다"]}, {"no": "3-5", "area": 2, "q": "도입한 AI 도구의 성과·오류를 점검하고 개선하는 운영 체계가 있다.", "opts": ["도입 후 방치한다", "문제가 생기면 그때 대응한다", "담당자가 비정기로 점검한다", "정기적으로 점검·개선한다", "사용 현황·성과 데이터로 관리한다"]}, {"no": "4-1", "area": 3, "q": "직원들이 생성형 AI를 업무(문서 작성·요약·분석 등)에 활용할 수 있다.", "opts": ["활용하는 직원이 거의 없다", "관심 있는 일부 직원만 쓴다", "30% 내외가 활용한다", "과반수가 활용한다", "대부분 일상적으로 활용한다"]}, {"no": "4-2", "area": 3, "q": "AI·디지털 교육을 정기적으로 실시한다(정부 훈련 지원 활용 포함).", "opts": ["교육이 없다", "개인 자율 학습에 맡긴다", "비정기 외부 교육을 보낸다", "연간 계획에 따라 정기 실시한다", "직무·수준별 교육 체계가 있다"]}, {"no": "4-3", "area": 3, "q": "AI 활용을 이끄는 내부 핵심 인력(사내 전문가·AI 챔피언)이 있다.", "opts": ["없다", "관심 있는 직원이 있다", "1명 정도 있다", "부서별로 핵심 인력이 있다", "사내 강사로 확산을 이끈다"]}, {"no": "4-4", "area": 3, "q": "외부 전문가·공급기업·지원기관과 협력 네트워크가 있다.", "opts": ["없다", "정보만 찾아보는 수준이다", "1회성 상담을 받았다", "지속 협력하는 기관이 있다", "공동 과제를 수행하고 있다"]}, {"no": "4-5", "area": 3, "q": "AI 시범 적용(PoC·파일럿) 경험이 축적되어 있다.", "opts": ["경험이 없다", "계획 단계이다", "1건 수행했다", "여러 건 수행해 성과를 확인했다", "시범 적용을 본격 운영으로 전환했다"]}, {"no": "5-1", "area": 4, "q": "AI 사용 사내 기준(입력 금지 정보, 승인 도구, 검수 원칙)이 있고 지켜진다.", "opts": ["기준이 없다", "구두로 주의만 준다", "문서화된 기준이 있다", "교육·서약으로 준수하게 한다", "정기 점검과 기술적 통제를 함께 한다"]}, {"no": "5-2", "area": 4, "q": "고객·직원 개인정보를 AI로 처리할 때의 기준과 절차가 있다.", "opts": ["고려하지 않는다", "필요성만 인식한다", "“입력 금지” 원칙이 있다", "처리 기준과 책임자가 정해져 있다", "정기 점검·영향 검토를 한다"]}, {"no": "5-3", "area": 4, "q": "AI 기본법 의무(고영향 AI 해당 여부, 생성형 AI 결과물 표시·고지)를 검토했다.", "opts": ["법을 모른다", "들어본 적만 있다", "주요 내용을 파악했다", "우리 회사 해당 여부를 검토했다", "필요한 조치를 이행하고 문서화했다"]}, {"no": "5-4", "area": 4, "q": "AI 결과를 사람이 검토하고 최종 결정하는 절차가 있다.", "opts": ["결과를 그대로 쓴다", "개인 판단에 맡긴다", "중요 업무만 검토한다", "검수 기준과 책임자가 명확하다", "오류를 기록해 개선에 반영한다"]}, {"no": "5-5", "area": 4, "q": "AI 생성물의 저작권·영업비밀 침해, 정보 유출 사고에 대한 대응 절차가 있다.", "opts": ["없다", "문제가 생기면 그때 대응한다", "대응 담당자가 지정되어 있다", "대응 절차가 문서화되어 있다", "모의 점검으로 절차를 개선한다"]}, {"no": "6-1", "area": 5, "q": "데이터·근거에 기반해 의사결정하는 문화가 있다.", "opts": ["경험·직감 위주로 결정한다", "일부 자료를 참고한다", "주요 회의에서 데이터를 활용한다", "대부분 근거에 기반해 결정한다", "데이터로 성과를 관리한다"]}, {"no": "6-2", "area": 5, "q": "작은 시범 적용 → 효과 확인 → 확대 방식으로 새로운 시도를 한다.", "opts": ["새 시도를 꺼린다", "실패 부담이 커 망설인다", "가끔 시도한다", "시범 적용을 장려한다", "실패에서 배운 점을 공유·제도화한다"]}, {"no": "6-3", "area": 5, "q": "직원들이 AI 도입을 긍정적으로 받아들이고, 우려 사항을 터놓고 소통한다.", "opts": ["거부감이 크다", "무관심하다", "긍정·부정이 반반이다", "대체로 긍정적이다", "직원 제안으로 활용이 확산된다"]}, {"no": "6-4", "area": 5, "q": "AI 활용 사례를 부서 간에 공유·확산하는 체계가 있다.", "opts": ["없다", "개인끼리만 공유한다", "비정기적으로 공유한다", "정기 공유회·게시판이 있다", "우수 사례를 포상하고 표준화한다"]}, {"no": "6-5", "area": 5, "q": "정부·지자체 AI 지원사업(바우처·스마트공장·훈련 지원 등)을 파악하고 활용한다.", "opts": ["모른다", "들어본 적만 있다", "관련 정보를 파악했다", "1건 이상 참여했다", "여러 사업을 연계해 활용한다"]}], "optional": [{"no": "S-1", "q": "(수출기업) 수출 대상국의 AI 규제(EU AI Act 등)가 우리 제품·서비스에 미치는 영향을 검토했다."}, {"no": "S-2", "q": "(수출·협력기업) 해외·대기업 고객사가 요구하는 AI·데이터 관련 기준(보안·출처 표시 등)에 대응하고 있다."}], "levels": [{"name": "Level 1 인식", "short": "인식", "lo": 30, "hi": 53, "desc": "AI 필요성은 인식하지만 업무 시스템·데이터·인력 기반이 부족한 단계입니다. 생성형 AI도 직원 개인 단위로만 쓰거나 쓰지 않습니다.", "actions": ["경영진 AI 이해 워크숍과 전 직원 생성형 AI 기초교육", "업무 시스템 도입·문서 디지털화 등 기초 디지털화 착수", "사내 AI 사용 기준(입력 금지 정보 등) 1쪽 분량으로 마련", "정부·지자체 지원사업 정보 파악"], "support": "AI 리터러시 교육, 기초 진단·컨설팅"}, {"name": "Level 2 탐색", "short": "탐색", "lo": 54, "hi": 77, "desc": "AI에 관심이 있고 일부 시도가 있으나 산발적입니다. 추진 담당·계획·예산이 체계화되지 않았습니다.", "actions": ["AI 우선 적용 업무 선정과 단계별 로드맵 수립", "회사 계정 생성형 AI 도입, 추진 담당자 지정", "효과가 큰 업무 1건으로 시범 적용(파일럿)", "개인정보·보안 기준 정비"], "support": "AI 도구 활용 실습 교육, 과제 발굴 컨설팅"}, {"name": "Level 3 실행", "short": "실행", "lo": 78, "hi": 101, "desc": "시범 적용 성과가 나오고 데이터·도구 기반이 어느 정도 갖춰진 단계입니다. 개인·부서 단위 활용을 조직 프로세스로 넓혀야 합니다.", "actions": ["성공 과제를 다른 부서·업무로 확대", "반복 업무 노코드 자동화·AI 에이전트 적용", "사내 문서를 AI 지식기반(사내 검색·챗봇)으로 연결", "과제별 효과 지표 정기 측정"], "support": "PBL 기반 AI+직무 훈련, 심화 컨설팅"}, {"name": "Level 4 확산", "short": "확산", "lo": 102, "hi": 125, "desc": "여러 AI 과제가 운영되고 조직 전반으로 확산되는 단계입니다. 시스템 연동, 거버넌스, 내부 인재 육성이 과제입니다.", "actions": ["AI 도구와 업무 시스템(ERP 등) 연동 고도화", "AI 기본법·개인정보 등 법규 준수 체계 점검·문서화", "사내 강사·AI 챔피언 양성으로 자체 확산", "투자 대비 효과를 경영진에 정기 보고"], "support": "AI 내재화 과정, 사내 강사 양성"}, {"name": "Level 5 선도", "short": "선도", "lo": 126, "hi": 150, "desc": "AI가 핵심 업무와 의사결정에 통합되어 지속적으로 개선되는 단계입니다.", "actions": ["AI 기반 신제품·고객 서비스 등 사업 모델 혁신", "협력사·공급망으로 AI 활용 확산", "우수 사례 대외 공유(성과공유회 발표 등)", "신기술·규제 변화 정기 모니터링"], "support": "선도기업 멘토링, 성과공유회 사례 발표"}], "tips": [["경영진 워크숍으로 AI 도입 목적 정리, 우선 적용 업무 후보 3개 선정", "단계별 로드맵·예산(구독비 포함) 확정, 추진 담당자에게 권한·시간 부여", "성과 지표를 경영 목표에 연동하고 연 1회 로드맵 갱신"], ["핵심 업무 시스템화와 사내 문서 디지털화 착수(공유 폴더 정리부터)", "기준정보 통일, 데이터 추출·점검 담당 지정, 주요 문서 최신본 관리", "사내 문서를 AI 지식기반으로 연결, 데이터 자동 수집·대시보드 고도화"], ["회사 계정 생성형 AI 도입, 업무별 활용 예시 공유", "비용·보안 기준으로 도구 선정, 반복 업무 1~2건 노코드 자동화 시범", "업무 시스템 연동·AI 에이전트 확대, 사용 현황·성과 정기 점검"], ["전 직원 생성형 AI 기초교육, 관심 직원을 AI 챔피언으로 지정", "직무별 실습 교육 정례화, 외부 지원기관과 시범 과제 수행", "사내 강사 양성, 수준별 교육 체계 운영, 시범 과제의 본격 운영 전환"], ["사내 AI 사용 기준(입력 금지 정보·승인 도구) 마련과 교육", "개인정보 처리 기준·책임자 지정, AI 기본법 해당 여부 검토", "정기 점검·기술적 통제, 사고 대응 절차 문서화와 모의 점검"], ["AI 도입 취지와 고용 영향에 대한 우려를 소통, 작은 성공 사례 1건 공유", "시범 적용 장려, 부서 간 사례 공유회 정례화, 지원사업 1건 이상 참여", "우수 사례 포상·표준화, 여러 지원사업 연계, 데이터 기반 성과 관리"]], "road": [{"goal": "AI 기초 체력 확보와 첫 성공 경험 만들기", "p1": ["경영진 AI 이해 워크숍", "사내 AI 사용 기준(입력 금지 정보·승인 도구) 1쪽 분량 수립", "일부 직원에게 회사 계정 생성형 AI 시범 제공", "전 직원 생성형 AI 기초교육"], "p2": ["생성형 AI 퀵윈 2~3건 적용(메일·제안서 초안, 회의록 요약, 보고서 초안)", "업무 시스템 도입·사내 문서 디지털화 착수"], "p3": ["잘 된 업무를 표준 프롬프트로 정리해 공유", "절감 시간 측정", "우선 적용 업무 목록과 1년 로드맵 초안 작성"], "kpi": "생성형 AI 활용 직원 30% · 퀵윈 2건 이상 · 사내 기준 수립", "budget": "월 수십만 원 수준(AI 도구 구독) + 교육(정부 훈련 지원 활용)", "next": "추진 담당자 지정 · 우선 과제 선정 · 회사 계정 운영", "scope": "Phase 1 중 난이도 ★☆☆ 생성형 AI 활용 과제"}, {"goal": "우선 과제 중심의 체계적인 시범 적용", "p1": ["추진 담당자·TF 지정", "효과×난이도로 우선 적용 업무 선정", "전사 회사 계정 생성형 AI 도입"], "p2": ["Phase 1 과제 1~2건 파일럿(SaaS 중심)", "개인정보·보안 기준 정비", "기준정보·데이터 정리"], "p3": ["파일럿 효과 측정 후 확대 여부 결정", "반복 업무 노코드 자동화 1건", "로드맵·예산 확정"], "kpi": "파일럿 2건 · 효과 수치 확보 · 생성형 AI 활용 직원 50%", "budget": "월 50~200만 원 수준(SaaS 구독) · 지원사업 매칭 검토", "next": "시범 성과 1건 이상 · 로드맵·예산 확정 · 데이터 기준 정비", "scope": "Phase 1 전체"}, {"goal": "성공 과제 확대와 데이터 기반 고도화", "p1": ["Phase 1 성공 과제를 다른 부서로 확대·표준화", "데이터 자동 수집 현황 점검"], "p2": ["Phase 2 SaaS형 과제(★★☆) 1건 도입", "사내 문서를 AI 지식기반(사내 검색·챗봇)으로 연결"], "p3": ["AI 도구와 업무 시스템 연동", "PBL 방식으로 현업 과제 실행", "과제별 효과 지표 정례 보고"], "kpi": "운영 과제 5건 이상 · 연간 절감 시간 · 과제별 ROI 산출", "budget": "월 100~300만 원 + 일부 구축비(바우처 등 지원사업 활용)", "next": "여러 부서에서 과제 운영 · 시스템 연동 · 법규 준수 점검", "scope": "Phase 1 + Phase 2 난이도 ★★☆"}, {"goal": "전사 확산과 예측·자동화 고도화", "p1": ["AI 기본법·개인정보 준수 체계 점검·문서화", "사내 강사·AI 챔피언 양성"], "p2": ["Phase 2 예측·비전 과제(★★★)를 외부 전문기업과 추진", "지원사업으로 구축비 분담"], "p3": ["Phase 3 일부(자연어 분석·트렌드 감지 등)", "AI 에이전트 적용 확대", "투자 대비 효과 경영진 보고"], "kpi": "부서별 운영 과제 · 연 1회 ROI 보고 · 내부 강사 확보", "budget": "과제당 수천만 원 수준(지원사업 매칭 권장)", "next": "핵심 업무에 AI 통합 · 자체 확산 체계 · 성과 관리 정착", "scope": "Phase 2 전체 + Phase 3 난이도 ★★☆"}, {"goal": "AI 기반 사업 혁신과 생태계 확산", "p1": ["AI 기반 신제품·서비스·사업 모델 기획"], "p2": ["Phase 3 과제(AI 에이전트·코파일럿·디지털 트윈 등) 추진"], "p3": ["협력사·공급망으로 AI 활용 확산", "성과공유회 등 대외 사례 공유"], "kpi": "AI 기반 매출·원가 효과 · 협력사 확산 수", "budget": "억 원 단위는 단계적 투자·지원사업 활용", "next": "(최고 등급) 신기술·규제 변화 정기 모니터링", "scope": "Phase 3"}], "tasks": [{"no": 1, "job": "영업", "phase": "Phase 1 단기", "name": "AI 기반 리드 스코어링", "desc": "CRM 데이터(접촉 이력·웹 행동·기업 정보)를 분석하여 유망 고객에게 자동으로 우선순위 점수 부여", "effect": "전환율 +25% · 영업 효율 +40%", "tools": "Salesforce Einstein · HubSpot AI", "diff": "★★☆", "cost": "월 50~200만원 (SaaS 구독)", "pre": "CRM 데이터 6개월+, 고객 접촉 이력 존재", "k": 2, "area": 1, "note": ""}, {"no": 2, "job": "영업", "phase": "Phase 1 단기", "name": "영업 메일/제안서 자동 생성", "desc": "생성형 AI가 고객 정보·제품 스펙 기반으로 맞춤형 영업 메일·제안서 초안 자동 작성", "effect": "작성 시간 -70% · 메일 응답률 +30%", "tools": "ChatGPT API · Notion AI", "diff": "★☆☆", "cost": "월 10~50만원 (API 비용)", "pre": "프롬프트 템플릿, 제품/서비스 DB", "k": 1, "area": 4, "note": "고객 정보는 사내 AI 사용 기준에 따라 입력"}, {"no": 3, "job": "영업", "phase": "Phase 1 단기", "name": "미팅 녹취 요약 및 Action Item 추출", "desc": "영업 미팅 음성을 AI가 자동 전사·요약하고 후속 조치 항목 자동 추출", "effect": "행정 업무 -50% · 후속 조치 누락 -80%", "tools": "Clova Note · Otter.ai · Fireflies", "diff": "★☆☆", "cost": "월 5~30만원", "pre": "녹음 장비/앱, 음성 데이터 동의", "k": 1, "area": 4, "note": "녹음 전 참석자 동의 필요"}, {"no": 4, "job": "영업", "phase": "Phase 2 중기", "name": "고객 이탈 예측 모델 구축", "desc": "구매 패턴·서비스 이용·클레임 데이터를 분석하여 이탈 가능성 높은 고객 사전 식별", "effect": "이탈률 -30% · 고객 유지 비용 -20%", "tools": "Custom ML 모델 · DataRobot", "diff": "★★★", "cost": "초기 2~5천만원 + 운영 월 100만원", "pre": "2년+ 거래 데이터, 데이터 엔지니어", "k": 4, "area": 1, "note": ""}, {"no": 5, "job": "영업", "phase": "Phase 2 중기", "name": "가격 최적화 엔진", "desc": "고객 세그먼트·경쟁가·수요 탄력성 분석하여 고객별 최적 가격·할인율 자동 산출", "effect": "마진 +15% · 가격 경쟁력 강화", "tools": "Pricefx · Custom 최적화 모델", "diff": "★★★", "cost": "초기 3~8천만원", "pre": "가격·매출 이력 데이터, 시장 데이터", "k": 4, "area": 1, "note": ""}, {"no": 6, "job": "영업", "phase": "Phase 2 중기", "name": "영업 파이프라인 예측", "desc": "AI 기반 딜 성사 확률 예측, 매출 예측, 파이프라인 건강도 자동 분석", "effect": "예측 정확도 +40% · 매출 가시성 향상", "tools": "Clari · Gong · Tableau AI", "diff": "★★☆", "cost": "월 200~500만원", "pre": "CRM 파이프라인 데이터, 12개월+ 실적", "k": 3, "area": 1, "note": ""}, {"no": 7, "job": "영업", "phase": "Phase 3 장기", "name": "AI 영업 코파일럿 (자율 에이전트)", "desc": "실시간 상담 중 경쟁사 비교·제품 추천·가격 제안 AI가 자동으로 영업 지원", "effect": "생산성 2배 · 신입 온보딩 -60%", "tools": "AI Sales Agent · Custom RAG", "diff": "★★★", "cost": "1~3억원 (자체 개발)", "pre": "사내 지식 DB 구축, MLOps 파이프라인", "k": 5, "area": 2, "note": ""}, {"no": 8, "job": "영업", "phase": "Phase 3 장기", "name": "Predictive Revenue Intelligence", "desc": "시장 신호(뉴스·경제지표)+내부 데이터 통합 중장기 매출 예측 및 시나리오 분석", "effect": "예측 오차 -60% · 전략적 의사결정 지원", "tools": "Revenue AI Platform · Custom 예측 모델", "diff": "★★★", "cost": "1~5억원", "pre": "외부 데이터 소스 연동, 고급 분석 역량", "k": 5, "area": 1, "note": ""}, {"no": 9, "job": "영업", "phase": "Phase 3 장기", "name": "자동 계약 검토 및 협상 지원", "desc": "AI 기반 계약서 리스크 조항 자동 분석 최적 협상 조건 추천", "effect": "계약 주기 -40% · 법적 리스크 감소", "tools": "Contract AI · Legal AI 솔루션", "diff": "★★★", "cost": "5천만~2억원", "pre": "과거 계약서 DB, 법무 검증 프로세스", "k": 5, "area": 4, "note": "최종 검토는 법무 담당·전문가"}, {"no": 10, "job": "마케팅", "phase": "Phase 1 단기", "name": "AI 콘텐츠 생성 (블로그/SNS/카피)", "desc": "생성형 AI로 마케팅 콘텐츠(블로그·SNS·광고카피) 대량 생산 및 A/B 변형 자동 제작", "effect": "콘텐츠 생산 5배 · 작성 비용 -60%", "tools": "ChatGPT API · Jasper · Writesonic", "diff": "★☆☆", "cost": "월 10~100만원", "pre": "브랜드 가이드라인, 톤앤매너 프롬프트", "k": 1, "area": 4, "note": "AI 생성물 표시 의무(AI 기본법)·저작권 확인"}, {"no": 11, "job": "마케팅", "phase": "Phase 1 단기", "name": "이미지/영상 소재 자동 제작", "desc": "AI 디자인 도구로 광고 이미지·배너·숏폼 영상 자동 제작 및 리사이징", "effect": "제작비 -60% · 소재 다양성 +500%", "tools": "Midjourney · DALL-E · Canva AI · Runway", "diff": "★☆☆", "cost": "월 10~50만원", "pre": "브랜드 비주얼 가이드, 기본 소재 에셋", "k": 1, "area": 4, "note": "AI 생성물 표시 의무(AI 기본법)·저작권 확인"}, {"no": 12, "job": "마케팅", "phase": "Phase 1 단기", "name": "SNS 게시 시간/채널 최적화", "desc": "팔로워 활동 패턴·과거 성과 분석하여 최적 게시 시간·채널·빈도 AI 추천", "effect": "도달률 +35% · 인게이지먼트 +25%", "tools": "Buffer AI · Hootsuite · Sprout", "diff": "★☆☆", "cost": "월 10~30만원", "pre": "SNS 계정 연동, 3개월+ 게시 이력", "k": 2, "area": 2, "note": ""}, {"no": 13, "job": "마케팅", "phase": "Phase 2 중기", "name": "고객 세그먼트 자동 분류", "desc": "구매·행동·인구통계 데이터로 AI 클러스터링 마이크로 세그먼트 자동 생성 및 프로파일링", "effect": "CTR +45% · 캠페인 효율 +50%", "tools": "Google Analytics 4 · Braze AI · Segment", "diff": "★★☆", "cost": "월 100~300만원", "pre": "통합 고객 데이터, 6개월+ 행동 로그", "k": 3, "area": 1, "note": ""}, {"no": 14, "job": "마케팅", "phase": "Phase 2 중기", "name": "개인화 추천 엔진 구축", "desc": "고객별 맞춤 상품·콘텐츠·오퍼 실시간 추천 웹/앱/이메일 전채널 개인화", "effect": "구매 전환 +30% · 객단가 +20%", "tools": "Recombee · AWS Personalize", "diff": "★★★", "cost": "초기 3~8천만원 + 운영 월 200만원", "pre": "고객 행동 데이터, 상품 카탈로그 DB", "k": 4, "area": 1, "note": ""}, {"no": 15, "job": "마케팅", "phase": "Phase 2 중기", "name": "광고 입찰/예산 자동 최적화", "desc": "실시간 AI 기반 광고 입찰 전략 조정 채널별 예산 최적 배분", "effect": "ROAS +50% · 광고비 효율 +35%", "tools": "Google PMax · Meta Advantage+", "diff": "★★☆", "cost": "광고비의 5~10% (기술 비용)", "pre": "광고 계정 연동, 전환 추적 설정", "k": 3, "area": 2, "note": ""}, {"no": 16, "job": "마케팅", "phase": "Phase 3 장기", "name": "AI 기반 통합 마케팅 자동화", "desc": "전채널 캠페인 기획~실행~분석~최적화 전 과정 AI 자동화", "effect": "인력 효율 3배 · 캠페인 속도 +200%", "tools": "Marketing AI Suite · HubSpot Enterprise", "diff": "★★★", "cost": "연 1~3억원", "pre": "마테크 스택 통합, CDP 구축", "k": 5, "area": 2, "note": ""}, {"no": 17, "job": "마케팅", "phase": "Phase 3 장기", "name": "예측 고객 여정 설계", "desc": "AI가 고객별 최적 터치포인트·메시지·타이밍 자동 구성하여 LTV 극대화", "effect": "LTV +40% · 여정 이탈 -30%", "tools": "CDP+AI · Customer Journey AI", "diff": "★★★", "cost": "연 2~5억원", "pre": "통합 고객 데이터, 여정 맵 설계", "k": 5, "area": 1, "note": ""}, {"no": 18, "job": "마케팅", "phase": "Phase 3 장기", "name": "실시간 트렌드 감지 및 기회 포착", "desc": "소셜/뉴스/검색 트렌드 실시간 분석 마케팅 기회 자동 알림", "effect": "시장 대응 -80% · 트렌드 선점", "tools": "Trend Intelligence · Social Listening AI", "diff": "★★☆", "cost": "월 200~500만원", "pre": "소셜 데이터 소스, 알림 체계 구축", "k": 4, "area": 2, "note": ""}, {"no": 19, "job": "HR", "phase": "Phase 1 단기", "name": "이력서 자동 스크리닝 및 순위화", "desc": "AI가 직무 요건 대비 이력서 적합도 자동 분석 상위 후보자 자동 순위화", "effect": "스크리닝 시간 -80% · 적합 후보 발견 +35%", "tools": "그리팅 AI · LinkedIn Recruiter AI", "diff": "★☆☆", "cost": "월 30~100만원", "pre": "채용 공고 DB, 과거 합격자 데이터", "k": 2, "area": 4, "note": "채용은 AI 기본법 고영향 AI 해당 여부 검토 필요, 최종 판단은 사람"}, {"no": 20, "job": "HR", "phase": "Phase 1 단기", "name": "면접 질문 자동 생성", "desc": "직무·역량·경험 기반 맞춤 면접 질문 AI 자동 생성 및 평가 루브릭 제공", "effect": "면접 품질 +40% · 준비 시간 -60%", "tools": "ChatGPT · 면접 AI 솔루션", "diff": "★☆☆", "cost": "월 10~30만원", "pre": "직무 기술서, 역량 모델", "k": 1, "area": 4, "note": ""}, {"no": 21, "job": "HR", "phase": "Phase 1 단기", "name": "HR 챗봇 (사내 문의 자동 응대)", "desc": "급여·휴가·복리후생·사내 규정 FAQ 24/7 자동 답변 챗봇", "effect": "문의 처리 -60% · 직원 만족도 +20%", "tools": "Slack Bot + ChatGPT · ServiceNow HRSD", "diff": "★★☆", "cost": "초기 1~3천만원 + 월 30만원", "pre": "HR 정책/규정 문서화, FAQ DB 구축", "k": 2, "area": 1, "note": "사내 규정 문서 최신본 관리 필요"}, {"no": 22, "job": "HR", "phase": "Phase 2 중기", "name": "직원 이직 예측 모델", "desc": "인사 데이터(근속·평가·급여·출근·설문) 분석 이직 리스크 높은 직원 조기 식별", "effect": "핵심 인재 이직 -25% · 대체 채용비 절감", "tools": "Workday AI · Custom ML 모델", "diff": "★★★", "cost": "초기 3~5천만원", "pre": "2년+ 인사 데이터, 퇴직자 이력 분석", "k": 4, "area": 4, "note": "직원 개인정보 처리 근거·동의 확인"}, {"no": 23, "job": "HR", "phase": "Phase 2 중기", "name": "역량 갭 분석 및 교육 추천", "desc": "직원별 현재 역량 vs 목표 역량 갭 AI 분석 개인 맞춤 교육 경로 자동 추천", "effect": "교육 효과 +35% · 역량 개발 가속", "tools": "SAP SuccessFactors · Cornerstone AI", "diff": "★★☆", "cost": "월 100~300만원", "pre": "역량 평가 데이터, 교육 콘텐츠 카탈로그", "k": 3, "area": 3, "note": ""}, {"no": 24, "job": "HR", "phase": "Phase 2 중기", "name": "공정 평가 지원 AI", "desc": "성과 평가 텍스트에서 편향(성별·연령·부서) 감지 보정 추천 및 일관성 분석", "effect": "평가 공정성 +40% · 평가 불만 -30%", "tools": "Textio · Custom NLP 모델", "diff": "★★★", "cost": "초기 3~5천만원", "pre": "3년+ 평가 데이터, 평가 기준 표준화", "k": 4, "area": 4, "note": "인사 평가는 고영향 AI 해당 여부 검토 필요"}, {"no": 25, "job": "HR", "phase": "Phase 3 장기", "name": "AI 기반 전략적 인력 계획", "desc": "사업 계획 연동 중장기 인력 수급 예측 채용·육성·배치 최적화 시뮬레이션", "effect": "인력 최적화 +30% · 채용 리드타임 -40%", "tools": "People Analytics · Custom 시뮬레이션", "diff": "★★★", "cost": "1~3억원", "pre": "인력·사업 데이터 통합, 시뮬레이션 플랫폼", "k": 5, "area": 0, "note": ""}, {"no": 26, "job": "HR", "phase": "Phase 3 장기", "name": "조직 네트워크 분석(ONA)", "desc": "이메일·메신저·미팅 패턴 분석으로 실제 협업 구조 파악 → 조직 설계 최적화", "effect": "조직 효율성 +25% · 사일로 해소", "tools": "ONA AI 솔루션 · Microsoft Viva", "diff": "★★★", "cost": "5천만~1억원", "pre": "커뮤니케이션 데이터, 개인정보 동의", "k": 5, "area": 4, "note": "직원 커뮤니케이션 분석은 개인정보 동의 필수"}, {"no": 27, "job": "HR", "phase": "Phase 3 장기", "name": "직원 경험(EX) 실시간 분석", "desc": "설문·피드백·채팅 감성 분석으로 조직 건강도 실시간 모니터링", "effect": "직원 만족도 +20% · 이슈 조기 대응", "tools": "EX Intelligence · Glint · Culture Amp", "diff": "★★☆", "cost": "월 200~500만원", "pre": "정기 서베이 체계, 피드백 채널 다양화", "k": 4, "area": 5, "note": ""}, {"no": 28, "job": "재무", "phase": "Phase 1 단기", "name": "전표/영수증 자동 인식 및 입력", "desc": "OCR+AI로 전표·영수증·세금계산서 자동 인식 → ERP 자동 입력", "effect": "입력 시간 -85% · 오류율 -90%", "tools": "UPSTAGE OCR · 자비스 · ABBYY", "diff": "★☆☆", "cost": "월 30~100만원", "pre": "ERP 연동 API, 문서 표준 양식", "k": 2, "area": 2, "note": ""}, {"no": 29, "job": "재무", "phase": "Phase 1 단기", "name": "경비 정산 자동화", "desc": "직원 경비 영수증 AI 자동 검증·분류 규정 위반 자동 감지 → 승인 자동화", "effect": "정산 주기 -70% · 부정 경비 탐지 +80%", "tools": "SAP Concur · Expensify AI", "diff": "★☆☆", "cost": "월 50~200만원", "pre": "경비 규정 디지털화, 승인 워크플로", "k": 2, "area": 2, "note": ""}, {"no": 30, "job": "재무", "phase": "Phase 1 단기", "name": "AI 재무 보고서 초안 생성", "desc": "월간/분기 재무 보고서 자동 작성 주요 변동 사항·이슈 자동 하이라이트", "effect": "보고서 작성 -60% · 분석 깊이 향상", "tools": "ChatGPT + Excel · Power BI AI", "diff": "★☆☆", "cost": "월 10~50만원", "pre": "재무 데이터 접근, 보고서 템플릿", "k": 1, "area": 4, "note": "재무 데이터 외부 AI 입력 기준 준수"}, {"no": 31, "job": "재무", "phase": "Phase 2 중기", "name": "이상 거래 탐지(Fraud Detection)", "desc": "AI 패턴 분석으로 부정·이상 거래 실시간 탐지 규칙 기반 + 머신러닝 하이브리드", "effect": "부정 탐지율 +70% · 오탐률 -50%", "tools": "BlackLine AI · Custom ML 모델", "diff": "★★★", "cost": "초기 5천만~1억원 + 운영 월 200만원", "pre": "3년+ 거래 데이터, 부정 사례 라벨링", "k": 4, "area": 1, "note": ""}, {"no": 32, "job": "재무", "phase": "Phase 2 중기", "name": "현금 흐름 예측 모델 구축", "desc": "수입·지출·계절성·거시경제 변수 통합 AI 기반 단기(주간)/중기(분기) 현금흐름 예측", "effect": "예측 정확도 +45% · 자금 운용 효율화", "tools": "Kyriba · HighRadius · Custom 시계열 모델", "diff": "★★★", "cost": "초기 3~8천만원", "pre": "2년+ 현금흐름 데이터, 거래처 결제 패턴", "k": 4, "area": 1, "note": ""}, {"no": 33, "job": "재무", "phase": "Phase 2 중기", "name": "세무 리스크 자동 분석", "desc": "세법 변경 사항 AI 자동 모니터링 자사 영향 분석 및 절세 전략 추천", "effect": "세무 리스크 -30% · 세무 조사 대비", "tools": "세무 AI 솔루션 · Custom RAG", "diff": "★★☆", "cost": "월 100~300만원", "pre": "세무 데이터, 법규 DB 구축", "k": 3, "area": 1, "note": ""}, {"no": 34, "job": "재무", "phase": "Phase 3 장기", "name": "AI 재무 시나리오 시뮬레이션", "desc": "경영 의사결정 지원 What-if 분석 투자·비용·매출 시나리오 자동 시뮬레이션", "effect": "의사결정 속도 3배 · 리스크 가시성 향상", "tools": "FP&A AI Platform · Anaplan + AI", "diff": "★★★", "cost": "1~3억원", "pre": "통합 재무 모델, 시나리오 프레임워크", "k": 5, "area": 0, "note": ""}, {"no": 35, "job": "재무", "phase": "Phase 3 장기", "name": "자연어 재무 분석(NLQ)", "desc": "자연어 질의로 재무 데이터 탐색 \"지난 분기 대비 영업이익 변동 원인은?\"", "effect": "분석 접근성 +200% · 비전문가 자율 분석", "tools": "ThoughtSpot · Power BI Copilot", "diff": "★★☆", "cost": "월 300~800만원", "pre": "데이터 웨어하우스, 시맨틱 레이어", "k": 4, "area": 1, "note": ""}, {"no": 36, "job": "재무", "phase": "Phase 3 장기", "name": "자동화된 내부 감사 AI", "desc": "전수 거래 AI 감사, 이상 패턴 자동 식별 연속 감사(Continuous Audit) 체계 구축", "effect": "감사 범위 +300% · 감사 비용 -40%", "tools": "Audit AI Platform · MindBridge", "diff": "★★★", "cost": "1~3억원", "pre": "ERP 전수 데이터, 감사 기준 정의", "k": 5, "area": 1, "note": ""}, {"no": 37, "job": "운영", "phase": "Phase 1 단기", "name": "수요 예측 AI 도입", "desc": "과거 판매·계절·이벤트 데이터 기반 SKU별 단기 수요 자동 예측", "effect": "예측 정확도 +30% · 결품/과잉재고 -25%", "tools": "수요예측 SaaS · Prophet · AutoML", "diff": "★★☆", "cost": "월 50~200만원 (SaaS)", "pre": "2년+ 판매 이력, 외부 변수 데이터", "k": 2, "area": 1, "note": ""}, {"no": 38, "job": "운영", "phase": "Phase 1 단기", "name": "재고 자동 발주 시스템", "desc": "AI 기반 적정 재고 수준 산출 자동 발주 추천/실행", "effect": "재고 비용 -20% · 서비스 수준 +15%", "tools": "ERP+AI 모듈 · Inventory SaaS", "diff": "★★☆", "cost": "월 50~200만원", "pre": "재고·발주 이력, ERP 연동", "k": 2, "area": 2, "note": ""}, {"no": 39, "job": "운영", "phase": "Phase 1 단기", "name": "AI 기반 작업 일보/보고 자동화", "desc": "현장 데이터(IoT·MES) 자동 수집 AI 기반 일일/주간 보고서 자동 생성", "effect": "보고 시간 -70% · 데이터 정확성 +50%", "tools": "MES+AI · Power BI · 모바일 보고 앱", "diff": "★☆☆", "cost": "월 30~100만원", "pre": "데이터 수집 체계, 보고서 템플릿", "k": 2, "area": 1, "note": ""}, {"no": 40, "job": "운영", "phase": "Phase 2 중기", "name": "설비 예지 정비(Predictive Maintenance)", "desc": "IoT 센서(진동·온도·전류) + AI로 설비 고장 사전 예측 → 정비 계획 최적화", "effect": "비계획 정지 -45% · 정비 비용 -30%", "tools": "Azure IoT+ML · AWS IoT · Custom", "diff": "★★★", "cost": "초기 5천만~2억원 + IoT 센서 비용", "pre": "IoT 센서 설치, 설비 이력 데이터", "k": 4, "area": 1, "note": ""}, {"no": 41, "job": "운영", "phase": "Phase 2 중기", "name": "AI 품질 검사(Vision AI)", "desc": "카메라+딥러닝으로 제품 외관 불량 자동 검출 및 분류", "effect": "불량률 -40% · 검사 속도 10배", "tools": "비전 AI 솔루션 · Custom CNN 모델", "diff": "★★★", "cost": "초기 3천만~1억원 + 카메라 장비", "pre": "양품/불량 이미지 데이터, 카메라 설치 환경", "k": 4, "area": 1, "note": ""}, {"no": 42, "job": "운영", "phase": "Phase 2 중기", "name": "물류 경로 최적화", "desc": "배송 주소·물량·시간·교통 데이터 분석 AI 기반 최적 경로·차량 배차", "effect": "물류비 -25% · 배송 시간 -20%", "tools": "경로 최적화 API · Google OR-Tools", "diff": "★★☆", "cost": "월 100~500만원", "pre": "배송 이력 데이터, 차량 GPS 연동", "k": 3, "area": 1, "note": ""}, {"no": 43, "job": "운영", "phase": "Phase 3 장기", "name": "디지털 트윈 기반 공정 시뮬레이션", "desc": "가상 환경에서 공정 변수 조합 시뮬레이션 최적 운영 조건 AI 탐색", "effect": "생산성 +30% · 에너지 -15%", "tools": "Digital Twin Platform · Siemens · PTC", "diff": "★★★", "cost": "2~10억원", "pre": "3D 설비 모델, IoT 실시간 데이터", "k": 5, "area": 1, "note": ""}, {"no": 44, "job": "운영", "phase": "Phase 3 장기", "name": "자율 공급망 관리(Autonomous SCM)", "desc": "실시간 수요·공급·리스크 통합 분석 AI 기반 자동 의사결정 및 실행", "effect": "리드타임 -35% · 공급 리스크 -50%", "tools": "SCM AI Platform · o9 Solutions", "diff": "★★★", "cost": "3~10억원", "pre": "공급망 전체 데이터 통합, 파트너 시스템 연동", "k": 5, "area": 2, "note": ""}, {"no": 45, "job": "운영", "phase": "Phase 3 장기", "name": "탄소 배출 최적화", "desc": "AI 기반 에너지·자원·공정 최적화 탄소 배출량 실시간 모니터링·저감", "effect": "탄소 -20% · ESG 점수 향상", "tools": "ESG Analytics · Carbon AI", "diff": "★★☆", "cost": "5천만~2억원", "pre": "에너지 사용 데이터, 탄소 배출 산정 체계", "k": 4, "area": 1, "note": ""}, {"no": 46, "job": "고객서비스", "phase": "Phase 1 단기", "name": "AI 챗봇 (FAQ 자동 응대)", "desc": "단순·반복 문의(배송·반품·계정 등) 24/7 자동 응대 챗봇", "effect": "상담 건수 -50% · 대기 시간 -80%", "tools": "Zendesk AI · 카카오 챗봇 · 채널톡", "diff": "★☆☆", "cost": "월 30~200만원", "pre": "FAQ DB 구축, 시나리오 설계", "k": 2, "area": 1, "note": "챗봇 이용 고객에게 AI임을 고지"}, {"no": 47, "job": "고객서비스", "phase": "Phase 1 단기", "name": "상담 내용 자동 분류 및 라우팅", "desc": "AI가 문의 유형·긴급도·감정 자동 판별 최적 상담사/부서에 자동 연결", "effect": "응대 시간 -40% · 만족도 +20%", "tools": "CRM AI 모듈 · Genesys AI", "diff": "★★☆", "cost": "월 50~200만원", "pre": "상담 이력 데이터, 분류 체계 정의", "k": 2, "area": 2, "note": ""}, {"no": 48, "job": "고객서비스", "phase": "Phase 1 단기", "name": "상담 후 자동 요약 및 이력 정리", "desc": "AI가 상담 내용 자동 요약·태깅·CRM 기록 상담사 후처리 시간 대폭 절감", "effect": "후처리 -70% · 이력 정확성 +50%", "tools": "Clova Note · AI 상담 요약 솔루션", "diff": "★☆☆", "cost": "월 20~100만원", "pre": "상담 녹취 시스템, CRM 연동", "k": 2, "area": 2, "note": "상담 녹취 동의 확인"}, {"no": 49, "job": "고객서비스", "phase": "Phase 2 중기", "name": "고객 감성 분석 (VOC Analytics)", "desc": "리뷰·상담·SNS 텍스트에서 감정·핵심 이슈·트렌드 자동 추출", "effect": "이슈 발견 +60% · 대응 속도 +50%", "tools": "VOC AI 솔루션 · Custom NLP 모델", "diff": "★★☆", "cost": "초기 3~5천만원 + 월 100만원", "pre": "다채널 VOC 데이터, NLP 모델 학습", "k": 3, "area": 1, "note": ""}, {"no": 50, "job": "고객서비스", "phase": "Phase 2 중기", "name": "상담 품질 자동 평가(QA AI)", "desc": "AI 기반 상담 품질 전수 자동 평가 스크립트 준수·친절도·해결력 분석", "effect": "QA 범위 100% · (기존 5~10%→전수)", "tools": "QA Analytics AI · Observe.AI", "diff": "★★★", "cost": "월 200~500만원", "pre": "QA 기준 정의, 평가 라벨링 데이터", "k": 4, "area": 2, "note": ""}, {"no": 51, "job": "고객서비스", "phase": "Phase 2 중기", "name": "선제적 고객 연락(Proactive Outreach)", "desc": "문제 예측(배송 지연·서비스 장애 등) AI가 먼저 고객에게 안내 메시지 발송", "effect": "NPS +25점 · 클레임 -40%", "tools": "Proactive AI · CRM 자동화", "diff": "★★★", "cost": "초기 3~5천만원", "pre": "예측 모델 구축, 자동 발송 시스템", "k": 4, "area": 2, "note": ""}, {"no": 52, "job": "고객서비스", "phase": "Phase 3 장기", "name": "AI 코파일럿 실시간 상담 지원", "desc": "상담 중 AI가 답변·절차·규정·유사 사례 실시간 제안하여 상담사 지원", "effect": "상담 품질 +50% · 처리 시간 -35%", "tools": "AI Contact Center · Custom RAG", "diff": "★★★", "cost": "5천만~2억원", "pre": "사내 지식 DB 구축, RAG 파이프라인", "k": 5, "area": 1, "note": ""}, {"no": 53, "job": "고객서비스", "phase": "Phase 3 장기", "name": "옴니채널 통합 AI 서비스", "desc": "전화·채팅·메일·SNS 전채널 AI 기반 일관된 고객 경험 제공", "effect": "채널 일관성 95%+ · 옴니채널 만족도 +30%", "tools": "Omnichannel AI · Salesforce Service", "diff": "★★★", "cost": "1~3억원", "pre": "전채널 시스템 통합, 통합 고객 뷰 구축", "k": 5, "area": 2, "note": ""}, {"no": 54, "job": "고객서비스", "phase": "Phase 3 장기", "name": "자율 해결 AI 에이전트", "desc": "복잡한 문의도 AI가 자율적으로 판단·처리 인간 개입 최소화", "effect": "자동 해결률 80%+ · 인건비 -40%", "tools": "Autonomous Agent · AI Agent Platform", "diff": "★★★", "cost": "2~5억원", "pre": "고급 RAG + Agent, 충분한 학습 데이터", "k": 5, "area": 2, "note": "사람의 감독 체계·AI 고지 필요"}], "jobs": ["전체", "영업", "마케팅", "HR", "재무", "운영", "고객서비스"]};
+/* ===== 설정: Apps Script 웹앱 배포 ID (역량 진단과 같은 저장 서버 사용) ===== */
+const DEPLOY_ID = 'AKfycbzVyjZfUUCpZ4IlQ1wZlxYX-crwnC8BIuBIM5YYsPUFkMC7uadBzZupoNlSkx-Ru02d';
+const API_URL = 'https://script.google.com/macros/s/' + DEPLOY_ID + '/exec';
+const CONSENT_RETENTION = '사업 종료 후 1년 (이후 지체 없이 파기)';
+const LVC = [
+  {c:'var(--l1)',bg:'var(--l1bg)'},{c:'var(--l2)',bg:'var(--l2bg)'},{c:'var(--l3)',bg:'var(--l3bg)'},
+  {c:'var(--l4)',bg:'var(--l4bg)'},{c:'var(--l5)',bg:'var(--l5bg)'}
+];
+const NQ = DATA.questions.length;
+const answers = new Array(NQ).fill(0);
+const optAnswers = DATA.optional.map(() => '');
+let step = 0; /* 0 = 기본정보, 1~6 = 영역 */
+const STEPS = DATA.areas.length + 1;
+const info = {company:'', industry:'', size:'', role:'', job:'전체', name:'', email:'', phone:'', consent:false, emailMe:true};
+
+const $ = (s, el=document) => el.querySelector(s);
+function h(tag, attrs={}, ...kids){
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs)){
+    if (k === 'class') e.className = v;
+    else if (k === 'style') e.style.cssText = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids.flat()){ if (k == null || k === false) continue; e.append(k instanceof Node ? k : document.createTextNode(k)); }
+  return e;
+}
+function updateProgress(){
+  const n = answers.filter(Boolean).length;
+  $('#barFill').style.width = (n/NQ*100)+'%';
+  $('#progText').textContent = `응답 ${n} / ${NQ}`;
+}
+const sel = (id, options, ph) => h('select',{id}, h('option',{value:''},ph||'선택하세요'), options.map(o => h('option',{value:o},o)));
+
+function renderInfo(root){
+  root.append(
+    h('div',{class:'step-title'}, h('b',{},`STEP 1 / ${STEPS}`), h('h2',{},'기업·응답자 정보')),
+    h('p',{class:'hint'},'계획이 아니라 지금 실제로 하고 있는 수준을 기준으로 응답해 주세요. 정답은 없습니다.'),
+    h('div',{class:'card'},
+      h('div',{class:'grid2'},
+        h('div',{}, h('label',{class:'f',for:'company'},'기업명 ',h('em',{},'*')), h('input',{type:'text',id:'company',maxlength:'60',placeholder:'예) ○○산업'})),
+        h('div',{}, h('label',{class:'f',for:'industry'},'업종 ',h('em',{},'*')), sel('industry',['제조업','도소매·유통','서비스업','IT·소프트웨어','건설업','물류·운송','기타'])),
+        h('div',{}, h('label',{class:'f',for:'size'},'상시근로자 수 ',h('em',{},'*')), sel('size',['10인 미만','10~49인','50~99인','100~299인','300인 이상'])),
+        h('div',{}, h('label',{class:'f',for:'role'},'응답자 역할 ',h('em',{},'*')), sel('role',['대표·임원','관리자(팀장 이상)','실무자'])),
+        h('div',{}, h('label',{class:'f',for:'name'},'성명 ',h('em',{},'*')), h('input',{type:'text',id:'name',maxlength:'30',autocomplete:'name'})),
+        h('div',{}, h('label',{class:'f',for:'job'},'관심 직무 ',h('span',{class:'opt-l'},'(추천 과제에 반영)')), sel('job',DATA.jobs,null)),
+        h('div',{}, h('label',{class:'f',for:'email'},'이메일 ',h('em',{},'*')), h('input',{type:'email',id:'email',maxlength:'100',autocomplete:'email',placeholder:'예) hong@company.co.kr'})),
+        h('div',{}, h('label',{class:'f',for:'phone'},'휴대폰 번호 ',h('span',{class:'opt-l'},'(선택)')), h('input',{type:'tel',id:'phone',maxlength:'13',inputmode:'numeric',placeholder:'예) 010-1234-5678'}))
+      ),
+      h('label',{class:'cb'}, h('input',{type:'checkbox',id:'emailMe'}), h('span',{},'진단 결과와 로드맵을 이메일로 받겠습니다.'))
+    ),
+    h('div',{class:'card consent'},
+      h('div',{class:'ct'},'개인정보 수집·이용 동의 (필수)'),
+      h('table',{},h('tbody',{},
+        h('tr',{},h('th',{},'수집 항목'),h('td',{},'기업명, 업종, 근로자 수, 응답자 역할, 성명, 이메일, 휴대폰 번호(선택), 진단 응답')),
+        h('tr',{},h('th',{},'이용 목적'),h('td',{},'AI 준비도 진단 결과 제공, 맞춤 컨설팅·교육과정 안내 및 사업 운영')),
+        h('tr',{},h('th',{},'보유 기간'),h('td',{},CONSENT_RETENTION)))),
+      h('p',{class:'hint'},'동의를 거부할 수 있으나, 거부 시 진단에 참여할 수 없습니다.'),
+      h('label',{class:'cb'}, h('input',{type:'checkbox',id:'consent'}), h('span',{},'위 내용을 확인하였으며 개인정보 수집·이용에 동의합니다.'))
+    )
+  );
+  for (const k of ['company','industry','size','role','job','name','email','phone']){
+    const el = $('#'+k, root); el.value = info[k];
+    el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => info[k] = el.value);
+  }
+  for (const k of ['consent','emailMe']){
+    const el = $('#'+k, root); el.checked = info[k];
+    el.addEventListener('change', () => info[k] = el.checked);
+  }
+}
+
+function renderArea(root, a){
+  root.append(
+    h('div',{class:'step-title'}, h('b',{},`STEP ${a+2} / ${STEPS}`), h('h2',{},`${a+1}. ${DATA.areas[a]}`)),
+    h('p',{class:'hint'},'우리 회사의 현재 모습에 가장 가까운 설명 하나를 고르세요.')
+  );
+  DATA.questions.forEach((q, qi) => {
+    if (q.area !== a) return;
+    const box = h('div',{class:'q',id:'q'+qi}, h('div',{class:'qn'},q.no), h('div',{class:'qt'},q.q));
+    const opts = h('div',{class:'opts',role:'radiogroup','aria-label':q.no});
+    q.opts.forEach((t,i) => {
+      const inp = h('input',{type:'radio',name:'q'+qi,value:String(i+1)});
+      if (answers[qi] === i+1) inp.checked = true;
+      inp.addEventListener('change', () => { answers[qi] = i+1; box.classList.remove('missing'); updateProgress(); });
+      opts.append(h('label',{class:'opt'}, inp, h('span',{class:'pt'},`${i+1}점`), h('span',{class:'tx'},t)));
+    });
+    box.append(opts); root.append(box);
+  });
+  if (a === DATA.areas.length - 1 && DATA.optional.length){
+    const card = h('div',{class:'card'}, h('h3',{class:'sec'},'선택 점검 (해당 기업만 · 점수 미반영)'));
+    DATA.optional.forEach((o, oi) => {
+      const yn = h('div',{class:'yn'});
+      ['예','아니오','해당 없음'].forEach(v => {
+        const inp = h('input',{type:'radio',name:'opt'+oi,value:v});
+        if (optAnswers[oi] === v) inp.checked = true;
+        inp.addEventListener('change', () => optAnswers[oi] = v);
+        yn.append(h('label',{class:'opt'}, inp, h('span',{class:'tx'},v)));
+      });
+      card.append(h('div',{style:'margin-top:12px'}, h('div',{style:'font-weight:600;font-size:14px;margin-bottom:8px'}, `${o.no}  ${o.q}`), yn));
+    });
+    root.append(card);
+  }
+}
+
+function renderStep(){
+  const root = $('#survey'); root.textContent = '';
+  if (step === 0) renderInfo(root); else renderArea(root, step-1);
+  const nav = h('div',{class:'nav'});
+  if (step > 0) nav.append(h('button',{class:'btn-s',type:'button',onclick:()=>{step--;renderStep();scrollTo(0,0);}},'이전'));
+  const last = step === STEPS - 1;
+  nav.append(h('button',{class:'btn-p',type:'button',id:'nextBtn',onclick:last?submit:next}, last?'제출하고 결과 보기':'다음'));
+  root.append(h('div',{class:'err',id:'err',role:'alert'}), nav);
+}
+const isEmail = s => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s.trim());
+function next(){
+  const err = $('#err'); err.textContent = '';
+  if (step === 0){
+    const miss = [];
+    if (!info.company.trim()) miss.push('기업명'); if (!info.industry) miss.push('업종'); if (!info.size) miss.push('근로자 수');
+    if (!info.role) miss.push('응답자 역할'); if (!info.name.trim()) miss.push('성명');
+    if (miss.length){ err.textContent = '필수 항목을 입력해 주세요: ' + miss.join(', '); return; }
+    if (!isEmail(info.email)){ err.textContent = '이메일 주소를 정확히 입력해 주세요.'; $('#email').focus(); return; }
+    const pd = info.phone.replace(/[^0-9]/g,'');
+    if (pd && (pd.length < 9 || pd.length > 11)){ err.textContent = '휴대폰 번호를 확인해 주세요. (선택 항목이므로 비워 두셔도 됩니다)'; return; }
+    if (!info.consent){ err.textContent = '개인정보 수집·이용에 동의해 주세요.'; return; }
+  } else if (!checkArea(step-1)) return;
+  step++; renderStep(); scrollTo(0,0);
+}
+function checkArea(a){
+  const miss = [];
+  DATA.questions.forEach((q,qi) => { if (q.area === a && !answers[qi]) miss.push(qi); });
+  miss.forEach(qi => $('#q'+qi).classList.add('missing'));
+  if (miss.length){
+    $('#err').textContent = '응답하지 않은 문항이 있습니다: ' + miss.map(qi => DATA.questions[qi].no).join(', ');
+    $('#q'+miss[0]).scrollIntoView({behavior:'smooth',block:'center'});
+    return false;
+  }
+  return true;
+}
+
+/* ===== 판정 로직 (서버와 동일) ===== */
+function compute(scores, job){
+  const areaScores = DATA.areas.map((_,a) => DATA.questions.reduce((s,q,i) => s + (q.area === a ? scores[i] : 0), 0));
+  const total = areaScores.reduce((s,v) => s+v, 0);
+  const level = total>=126?5:total>=102?4:total>=78?3:total>=54?2:1;
+  const areaLevels = areaScores.map(s => s>=21?5:s>=17?4:s>=13?3:s>=9?2:1);
+  const rec = [], pre = []; let nextCount = 0;
+  DATA.tasks.forEach((t, i) => {
+    if (job && job !== '전체' && t.job !== job) return;
+    if (t.k > level){ nextCount++; return; }
+    const thr = t.k === 1 ? 0 : t.k === 2 ? 9 : 13;
+    const key = (level - t.k) * 1000 + i;
+    (areaScores[t.area] < thr ? pre : rec).push({key, i});
+  });
+  const pick = (arr, n) => arr.sort((a,b) => a.key-b.key).slice(0,n).map(x => x.i);
+  return {total, level, areaScores, areaLevels, rec: pick(rec, 8), pre: pick(pre, 4), nextCount};
+}
+
+function submit(){
+  if (!checkArea(DATA.areas.length - 1)) return;
+  if (answers.some(v => !v)){ $('#err').textContent = '응답하지 않은 문항이 있습니다. 이전 단계를 확인해 주세요.'; return; }
+  const btn = $('#nextBtn'); btn.disabled = true; btn.textContent = ''; btn.append(h('span',{class:'spinner'}),'저장 중…');
+  const payload = {type:'readiness', company:info.company, industry:info.industry, size:info.size, role:info.role, job:info.job,
+    name:info.name, email:info.email.trim(), phone:info.phone, consent:info.consent, emailMe:info.emailMe,
+    scores:answers.slice(), optional:optAnswers.slice()};
+  const local = compute(payload.scores, payload.job);
+  const fail = e => {
+    btn.disabled = false; btn.textContent = '제출하고 결과 보기';
+    $('#err').textContent = '저장 중 문제가 발생했습니다. 잠시 후 다시 눌러 주세요. (' + ((e && e.message) || e) + ')';
+  };
+  if (!DEPLOY_ID || DEPLOY_ID.indexOf('__') === 0){ setTimeout(() => showResult(Object.assign(local,{mail:'none'})), 300); return; }
+  fetch(API_URL, {method:'POST', body: JSON.stringify(payload), redirect:'follow'})
+    .then(res => res.json())
+    .then(j => j && j.ok ? showResult(Object.assign(local, {mail: j.result.mail})) : fail(new Error((j && j.error) || '서버 응답 오류')))
+    .catch(fail);
+}
+
+function radarSVG(scores){
+  const N = scores.length, cx=210, cy=180, R=120, ns='http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns,'svg');
+  svg.setAttribute('viewBox','-60 0 540 360'); svg.setAttribute('role','img');
+  svg.setAttribute('aria-label','영역별 점수: '+DATA.areas.map((a,i)=>`${a} ${scores[i]}점`).join(', '));
+  const pt = (i,r) => { const g = -Math.PI/2 + i*2*Math.PI/N; return [cx + r*Math.cos(g), cy + r*Math.sin(g)]; };
+  const mk = (tag, at) => { const e = document.createElementNS(ns,tag); for (const k in at) e.setAttribute(k,at[k]); svg.append(e); return e; };
+  [5,10,15,20,25].forEach(v => mk('polygon',{points:[...Array(N)].map((_,i)=>pt(i,R*v/25).join(',')).join(' '),fill:v===25?'#F7F9FC':'none',stroke:'#D5DCE6','stroke-width':1}));
+  for (let i=0;i<N;i++){ const [x,y]=pt(i,R); mk('line',{x1:cx,y1:cy,x2:x,y2:y,stroke:'#D5DCE6'}); }
+  mk('polygon',{points:scores.map((s,i)=>pt(i,R*s/25).join(',')).join(' '),fill:'rgba(21,101,192,.22)',stroke:'#1565C0','stroke-width':2.5,'stroke-linejoin':'round'});
+  scores.forEach((s,i) => {
+    const [x,y] = pt(i,R*s/25); mk('circle',{cx:x,cy:y,r:4,fill:'#1565C0'});
+    const [lx,ly] = pt(i,R+34);
+    const anchor = Math.abs(lx-cx) < 10 ? 'middle' : (lx > cx ? 'start' : 'end');
+    const dx = anchor === 'start' ? -8 : anchor === 'end' ? 8 : 0;
+    mk('text',{x:lx+dx,y:ly-2,'text-anchor':anchor,'font-size':13,'font-weight':700,fill:'#1B2430'}).textContent = DATA.areas[i];
+    mk('text',{x:lx+dx,y:ly+15,'text-anchor':anchor,'font-size':12.5,'font-weight':700,fill:'#1565C0'}).textContent = s+'점';
+  });
+  return svg;
+}
+const lvTag = l => h('span',{class:'lv',style:`color:${LVC[l-1].c};background:${LVC[l-1].bg}`}, `Lv.${l}`);
+function taskCard(i, pre){
+  const t = DATA.tasks[i];
+  return h('div',{class:'task'+(pre?' pre':'')},
+    h('div',{class:'top'}, h('span',{class:'chip job'},t.job), h('span',{class:'chip'},t.phase), h('span',{class:'chip'},'난이도 '+t.diff), lvTag(t.k)),
+    h('div',{class:'nm'}, t.name),
+    h('div',{class:'ds'}, t.desc),
+    h('div',{class:'meta'}, h('b',{},'추천 도구 '), t.tools),
+    h('div',{class:'meta'}, h('b',{},'예상 비용 '), t.cost, '  ·  ', h('b',{},'기대효과 '), t.effect),
+    h('div',{class:'meta'}, h('b',{},'선행 조건 '), t.pre, pre ? h('span',{style:'color:#8A4B00;font-weight:700'}, `  →  먼저 ‘${DATA.areas[t.area]}’ 영역을 보완하세요`) : null),
+    t.note ? h('div',{class:'warn'}, '※ ' + t.note) : null
+  );
+}
+
+function showResult(r){
+  window.onbeforeunload = null;
+  $('#survey').classList.add('hidden'); $('#progress').classList.add('hidden');
+  const root = $('#result'); root.textContent = ''; root.classList.remove('hidden');
+  const li = r.level - 1, L = DATA.levels[li], RD = DATA.road[li];
+  const ladder = h('div',{class:'ladder'}, DATA.levels.map((v,i) => {
+    const d = h('div',{class:i===li?'on':''}, h('b',{},v.name), `${v.lo}~${v.hi}점`);
+    if (i === li) d.style.background = LVC[i].c; return d;
+  }));
+  root.append(h('div',{class:'card res-head'},
+    h('div',{class:'who'}, `${info.company} · ${info.industry} · ${info.size}  |  ${info.name} (${info.role})`),
+    h('div',{class:'score'}, String(r.total), h('small',{},' / 150점')),
+    h('div',{class:'badge',style:`color:${LVC[li].c};background:${LVC[li].bg}`}, '★ ' + L.name),
+    h('p',{class:'desc'}, L.desc), ladder,
+    r.mail === 'sent' ? h('div',{class:'mailnote'}, `진단 결과와 로드맵을 ${info.email.trim()} 으로 보내드렸습니다.`) :
+    r.mail === 'dup' ? h('div',{class:'mailnote'}, '10분 이내에 같은 주소로 결과 메일을 이미 보내드렸습니다.') :
+    r.mail === 'failed' ? h('div',{class:'mailnote warn'}, '결과 메일 발송이 지연되고 있습니다. 이 화면을 인쇄하거나 PDF로 저장해 두세요.') : null
+  ));
+
+  const tb = h('tbody');
+  DATA.areas.forEach((a,i) => {
+    const band = r.areaScores[i] >= 17 ? 2 : r.areaScores[i] >= 13 ? 1 : 0;
+    tb.append(h('tr',{}, h('td',{class:'n'},a), h('td',{class:'s'},`${r.areaScores[i]} / 25`), h('td',{},lvTag(r.areaLevels[i])), h('td',{class:'tip'}, DATA.tips[i][band])));
+  });
+  const mx = Math.max(...r.areaScores), mn = Math.min(...r.areaScores);
+  root.append(h('div',{class:'card'},
+    h('h3',{class:'sec'},'영역별 준비도'),
+    h('div',{class:'radar'}, radarSVG(r.areaScores)),
+    h('p',{class:'hint',style:'text-align:center'}, mx === mn ? '여섯 영역이 고르게 분포되어 있습니다.' :
+      `가장 준비된 영역은 ‘${DATA.areas[r.areaScores.indexOf(mx)]}’, 우선 보완할 영역은 ‘${DATA.areas[r.areaScores.indexOf(mn)]}’입니다.`),
+    h('table',{class:'areas'}, h('thead',{},h('tr',{},h('th',{},'영역'),h('th',{},'점수'),h('th',{},'수준'),h('th',{},'권장 과제'))), tb)
+  ));
+
+  root.append(h('div',{class:'card'},
+    h('h3',{class:'sec'},`12개월 로드맵 실행가이드 — ${L.name}`),
+    h('div',{class:'goal'}, '목표: ' + RD.goal),
+    h('div',{class:'timeline'},
+      [['0~3개월',RD.p1],['3~6개월',RD.p2],['6~12개월',RD.p3]].map(([t,items]) =>
+        h('div',{class:'phase'}, h('span',{class:'ph'},t), h('ul',{}, items.map(x => h('li',{},x)))))),
+    h('dl',{class:'kv'},
+      h('dt',{},'핵심 KPI'), h('dd',{},RD.kpi),
+      h('dt',{},'예산 규모(참고)'), h('dd',{},RD.budget),
+      h('dt',{},'다음 등급 조건'), h('dd',{},RD.next),
+      h('dt',{},'추천 과제 범위'), h('dd',{},RD.scope)),
+    h('div',{class:'train'}, h('b',{style:'color:var(--navy)'},'권장 액션  '), L.actions.join(' · '), h('br'), h('b',{style:'color:var(--navy)'},'연계 지원  '), L.support)
+  ));
+
+  const jobTxt = (!info.job || info.job === '전체') ? '전체 직무' : info.job;
+  root.append(h('div',{class:'card'},
+    h('h3',{class:'sec'},`추천 AI 활용 과제 (${jobTxt})`),
+    h('p',{class:'hint'},'지금 등급에서 바로 시작할 과제를 위에, 이전 단계에서 놓친 과제를 아래에 표시했습니다.'),
+    r.rec.length ? r.rec.map(i => taskCard(i,false)) : h('p',{}, '현재 조건에 맞는 추천 과제가 없습니다. 아래 선행 보완 과제와 영역별 권장 과제부터 시작하세요.')
+  ));
+  if (r.pre.length) root.append(h('div',{class:'card'},
+    h('h3',{class:'sec'},'선행 조건을 보완한 뒤 추진할 과제'),
+    h('p',{class:'hint'},'등급상 시작할 수 있지만, 과제에 필요한 진단 영역 점수가 부족합니다.'),
+    r.pre.map(i => taskCard(i,true))
+  ));
+  root.append(
+    h('p',{class:'note'}, `등급이 오르면 추천 목록에 들어올 다음 단계 과제가 ${r.nextCount}개 더 있습니다. 기대효과·비용은 일반적인 참고치이며, 기업 규모와 업종에 따라 크게 다를 수 있습니다.`),
+    h('div',{class:'nav no-print'}, h('button',{class:'btn-p',type:'button',onclick:()=>window.print()},'결과 인쇄 / PDF로 저장')),
+    h('p',{class:'note'},'본 진단은 자기 평가 결과입니다. 정확한 수준 판정과 과제 선정은 전문가 현장 진단·컨설팅과 함께 활용하시기 바랍니다.')
+  );
+  scrollTo(0,0);
+}
+
+window.onbeforeunload = () => answers.some(Boolean) ? true : undefined;
+renderStep(); updateProgress();
+</script>
+</body>
+</html>
